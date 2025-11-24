@@ -1,254 +1,673 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Móveis Simonetti</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#fbe9e7">
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-  <link rel="apple-touch-icon" href="icon-512.png">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #fff5f5;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      text-align: center;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-    h1 {
-      margin: 20px 0;
-      color: #d32f2f;
-      font-size: 24px;
-      font-weight: 600;
-    }
+<meta charset="UTF-8" />
+<title>AGENDAMENTO DESIGN - MÓVEIS SIMONETTI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    .links {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
-      width: 100%;
-      max-width: 800px;
-      padding: 0 10px;
-    }
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/scroller/2.2.5/js/dataTables.scroller.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 
-    a {
-      display: inline-block;
-      padding: 16px 28px;
-      background: #fff;
-      color: #b71c1c;
-      font-size: 18px;
-      font-weight: bold;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      text-decoration: none;
-      transition: transform 0.2s, box-shadow 0.2s;
-      min-width: 160px;
-      text-align: center;
-      flex: 1;
-    }
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/scroller/2.2.5/css/scroller.dataTables.min.css"/>
 
-    a:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-    }
+<style>
+:root {
+  --cor-fundo-dashboard: #fafafa;
+  --cor-cabecalho: linear-gradient(90deg, #ff6666, #cc0000);
+  --cor-texto-cabecalho: #ffffff;
+  --cor-linha-par: #ffe5e5;
+  --cor-linha-impar: #fff5f5;
+  --cor-filtro: linear-gradient(90deg, #fff5f5, #ffe5e5);
+}
+body { font-family: 'Segoe UI', sans-serif; background-color: var(--cor-fundo-dashboard); color: #333; padding: 10px; margin: 0; }
+header { text-align: center; margin-bottom: 20px; }
+h1 { color: #cc0000; font-size: 6vw; margin: 10px 0 20px 0; font-weight: bold; }
+@media (min-width: 768px) { h1 { font-size: 28px; } }
+.table-container { overflow-x: auto; border: 1px solid #ff9999; border-radius: 6px; margin-top: 10px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+table { border-collapse: collapse; font-size: 13px; width: 100%; min-width: 900px; table-layout: fixed; }
+thead th, thead td { 
+  background: var(--cor-cabecalho); 
+  color: var(--cor-texto-cabecalho); 
+  padding: 6px 4px; 
+  text-align: center; 
+  font-weight: bold; 
+  vertical-align: top;
+  position: relative;
+  overflow: visible !important;
+  border: 1px solid #ddd;
+}
+thead tr.filters th {
+  padding: 0;
+  border: 1px solid #ddd;
+}
+tbody tr:nth-child(even) { background-color: var(--cor-linha-par); }
+tbody tr:nth-child(odd) { background-color: var(--cor-linha-impar); }
+td, th { 
+  border: 1px solid #ddd; 
+  box-shadow: inset 0 0 2px rgba(0,0,0,0.05); 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  white-space: nowrap; 
+  text-align: center; 
+}
+td { padding: 8px 12px; border-bottom: 1px solid #eee; cursor: default; }
 
-    .logo {
-      width: 200px; /* Tamanho da logo no PC */
-      height: 200px;
-      margin-top: 20px;
-      margin-bottom: 20px;
-    }
+/* Filtro */
+.filter-select {
+  width: 100%;
+  padding: 6px;
+  font-size: 13px;
+  background: var(--cor-filtro);
+  border: 1px solid #cc0000;
+  color: #333;
+  text-align: center;
+  appearance: none;
+  -webkit-appearance: none;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+.filter-select.applied {
+  background-color: #FFD700;
+}
+.filter-select:hover {
+  border-color: #a30000;
+  background: #ffe5e5;
+}
 
-    .top-bar {
-      background: #f8e5e3; /* Cor de fundo da barra para PC */
-      color: #333;
-      padding: 15px 30px;
-      width: 100%;
-      max-width: 400px; /* Largura da barra no PC */
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    #welcomeUser {
-      font-weight: bold;
-      color: #333;
-    }
+/* Aumenta largura da coluna TIPO DE PRODUTO */
+thead th.tipo-produto { min-width: 200px !important; }
 
-    .top-bar button {
-      background: #CC0000;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.3s;
-    }
-    .top-bar button:hover {
-        background: #a00;
-    }
+/* Menu compartilhar */
+.menu { position: relative; display: inline-block; margin-bottom: 10px; }
+.menu button { background: #cc0000; color: #fff; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 14px; transition: background 0.3s; }
+.menu button:hover { background: #a30000; }
+.menu-content { display: none; position: absolute; background: #fff; color: #333; box-shadow: 0px 4px 8px rgba(0,0,0,0.1); z-index: 1; min-width: 150px; border-radius: 4px; }
+.menu-content a { display: block; padding: 10px; text-decoration: none; color: #333; font-size: 14px; }
+.menu-content a:hover { background: #fbeaea; }
+.menu:hover .menu-content { display: block; }
 
-    #installBanner {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background-color: #d32f2f;
-      color: white;
-      text-align: center;
-      padding: 10px;
-      cursor: pointer;
-      display: none;
-    }
+/* Modal popup */
+#modalCarga {
+  display:none;
+  position:fixed;
+  top:0; left:0; right:0; bottom:0;
+  background:rgba(0,0,0,0.5);
+  z-index:9999;
+  justify-content:center;
+  align-items:center;
+}
+#modalCarga .modal-content {
+  background:#fff;
+  padding:20px;
+  border-radius:8px;
+  max-width:400px;
+  width:90%;
+  text-align:center;
+  position:relative;
+  box-shadow:0 4px 12px rgba(0,0,0,0.3);
+}
+#modalCarga .modal-content h2 { color:#cc0000; margin-bottom:10px; }
+#modalCarga .modal-content p { font-size:14px; word-break:break-word; }
+.close-modal {
+  position:absolute;
+  top:10px;
+  right:15px;
+  cursor:pointer;
+  font-weight:bold;
+  font-size:18px;
+}
 
-    /* Estilos para telas pequenas (celular) */
-    @media (max-width: 768px) {
-      body {
-        padding: 10px;
-        justify-content: flex-start;
-      }
-      .top-bar {
-        position: static;
-        margin-top: 0;
-        margin-bottom: 20px;
-        padding: 10px 20px;
-        width: calc(100% - 20px);
-        max-width: none;
-      }
-      .links {
-        flex-direction: column;
-        align-items: center;
-      }
-      a {
-        width: 80%;
-        margin-bottom: 10px;
-      }
-      .logo {
-        width: 150px; /* Tamanho da logo no celular */
-        height: 150px;
-      }
-      h1 {
-        font-size: 20px;
-      }
-    }
-  </style>
+/* Novo Modal para os Filtros */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+.modal-content-filter {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  max-height: 80%;
+  max-width: 90%;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+}
+.modal-checkbox-list {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+.modal-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+#modalButtons {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 -20px 15px -20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 15px;
+  position: sticky;
+  top: 0;
+  background: white;
+  border-bottom: 1px solid #ddd;
+}
+#modalButtons button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #fff;
+  flex-grow: 1;
+  margin: 0 5px;
+}
+#btnSelectAll {
+  background-color: #007bff;
+}
+#btnSelectNone {
+  background-color: #dc3545;
+}
+#btnApplyFilter {
+  background-color: #28a745;
+}
+/* NOVO: Estilo para o botão Cancelar */
+#btnCancel {
+    background-color: #6c757d; 
+}
+
+/* **CSS Modal de Filtro Profissional (Sombreado)** */
+.disabled-option {
+    color: #a0a0a0;
+    opacity: 0.6;
+}
+.disabled-option input[type="checkbox"] {
+    opacity: 0.6;
+}
+/* **FIM CSS** */
+
+/* Responsivo melhorado para botões e selects */
+@media (max-width: 768px) {
+  .menu button { padding: 6px 10px; font-size: 13px; }
+  .filter-select { font-size: 13px; min-width: 100px; }
+  h1 { font-size: 22px; }
+
+  /* Ajusta o cabeçalho para dispositivos móveis */
+  table.dataTable thead .sorting,
+  table.dataTable thead .sorting_asc,
+  table.dataTable thead .sorting_desc {
+      white-space: normal;
+  }
+}
+</style>
 </head>
 <body>
 
-<div class="top-bar">
-  <span id="welcomeUser">Carregando...</span>
-  <button onclick="logout()">Sair</button>
-</div>
-
-<img src="icon-512.png" alt="Móveis Simonetti" class="logo">
-
-<h1>Escolha como deseja continuar:</h1>
-
-<div class="links">
-  <a href="agendamento.html">📅 AGENDAMENTO</a>
-  <a href="recebimento.html">🛠 AJUSTE</a>
-  <a href="cargas do dia.html">🚚 CARGAS DO DIA</a>
-</div>
-
-<div id="installBanner">📲 Instalar App</div>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyBvcY4cObePVA0knUcmeSCT2JPkpATQpIw",
-    authDomain: "recebimento-45b44.firebaseapp.com",
-    projectId: "recebimento-45b44",
-    storageBucket: "recebimento-45b44.firebasestorage.app",
-    messagingSenderId: "163866983916",
-    appId: "1:163866983916:web:e901b7cf58b28733a554c9"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  const welcomeUser = document.getElementById("welcomeUser");
-
-  // Check for username in localStorage first for a faster load
-  const storedUsername = localStorage.getItem("username");
-  if (storedUsername) {
-    welcomeUser.textContent = `Bem-vindo, ${storedUsername}`;
-  } else {
-    welcomeUser.textContent = "Carregando...";
-  }
-
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      const userDocRef = doc(db, "users", user.uid);
-      const docSnap = await getDoc(userDocRef);
-
-      if (docSnap.exists() && docSnap.data().username) {
-        const username = docSnap.data().username;
-        // Update the display and store in localStorage
-        welcomeUser.textContent = `Bem-vindo, ${username}`;
-        localStorage.setItem("username", username);
-      } else {
-        console.error("Dados de usuário incompletos. Redirecionando.");
-        window.location.href = "login.html";
-      }
-    } else {
-      window.location.href = "login.html";
-    }
-  });
-
-  window.logout = () => {
-    signOut(auth).then(() => {
-      localStorage.removeItem("username");
-      window.location.href = "login.html";
-    }).catch((error) => {
-      console.error("Erro ao fazer logout: ", error);
-    });
-  };
+<script>
+if (localStorage.getItem("isLoggedIn") !== "true") { window.location.href = "login.html"; }
 </script>
 
-<script defer>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./sw.js");
-  }
+<div id="userBar" style="background:#E6E6E6; padding:10px; display:flex; justify-content:space-between; align-items:center; border-radius:6px; margin-bottom:12px;">
+  <button onclick="history.back()" style="
+    background: transparent; 
+    border: none; 
+    color: #333; 
+    font-size: 24px; 
+    cursor: pointer;
+    margin-right: 10px;
+  ">←</button>
+  <span id="welcomeUser" style="font-weight:bold; color:#333; flex-grow: 1;"></span>
+  <button onclick="logout()" style="background:#CC0000; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">Sair</button>
+</div>
+<script>
+const username = localStorage.getItem("username") || "Usuário";
+document.addEventListener("DOMContentLoaded", ()=>{
+  document.getElementById("welcomeUser").textContent = "Bem-vindo, " + username;
+});
+function logout(){
+  localStorage.removeItem("isLoggedIn");
+  localStorage.removeItem("username");
+  window.history.replaceState(null, null, "login.html");
+  window.location.href = "login.html";
+}
+</script>
 
-  let deferredPrompt;
-  const installBanner = document.getElementById("installBanner");
+<header>
+  <h1>AGENDAMENTO DESIGN - MÓVEIS SIMONETTI</h1>
+</header>
 
-  window.addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    installBanner.style.display = "block";
-  });
+<div class="menu">
+  <button>📤 Compartilhar</button>
+  <div class="menu-content">
+    <a href="#" onclick="exportarPDF()">Exportar PDF</a>
+    <a href="#" onclick="exportarExcel()">Exportar Excel</a>
+  </div>
+</div>
 
-  installBanner.addEventListener("click", (e) => {
-    installBanner.style.display = "none";
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === "accepted") {
-          console.log("Usuário aceitou a instalação do PWA");
-        } else {
-          console.log("Usuário recusou a instalação do PWA");
-        }
-        deferredPrompt = null;
-      });
+<div class="table-container">
+  <table id="planilha" class="display nowrap">
+    <thead>
+      <tr class="headers"></tr>
+      <tr class="filters"></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<div id="modalCarga">
+  <div class="modal-content">
+    <span class="close-modal">×</span>
+    <h2>Detalhes</h2>
+    <p id="conteudoCarga"></p>
+  </div>
+</div>
+
+<div id="filterModalOverlay" class="modal-overlay">
+    <div id="filterModalContent" class="modal-content-filter">
+        <div id="modalTitle" class="modal-title"></div>
+        <div id="modalCheckboxList" class="modal-checkbox-list"></div>
+        <div id="modalButtons">
+            <button id="btnSelectAll">Marcar Todos</button>
+            <button id="btnSelectNone">Desmarcar Todos</button>
+            <button id="btnCancel">Cancelar</button> <button id="btnApplyFilter">Aplicar Filtro</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const sheetID = "1Ore02M4GARvE6hldNDZmiVNDrABb4dgaZO7wlMY-fjs";
+const gidPinheiros = "0";
+const gidSerra = "353068485";
+const urls = [
+  `https://docs.google.com/spreadsheets/d/${sheetID}/export?format=csv&gid=${gidPinheiros}`,
+  `https://docs.google.com/spreadsheets/d/${sheetID}/export?format=csv&gid=${gidSerra}`
+];
+let allData = [];
+let dataTable;
+let colunas = ["SENHA DE AGENDAMENTO", "DATA", "CENTRAL", "CARGAS", "FORNECEDOR", "TIPO DE PRODUTO", "PRODUTO"];
+
+// Define a nova ordem de tipo de dados para datas no formato brasileiro (dd/mm/yyyy)
+$.fn.dataTable.ext.type.order['date-br-pre'] = function(data) {
+    if (!data) return 0;
+    const parts = data.split('/');
+    if (parts.length !== 3) return 0;
+    const d = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10) - 1; // Mês é zero-based
+    const y = parseInt(parts[2], 10);
+    return new Date(y, m, d).getTime();
+};
+
+function carregarDados(url, callback) {
+  Papa.parse(url, { 
+    download:true, 
+    header:true, 
+    complete:function(results){
+      // FILTRO APLICADO AQUI: apenas linhas onde FORNECEDOR é 'DESIGN'
+      const dadosFiltrados = results.data.filter(row => 
+        colunas.some(c => row[c] && row[c].trim() !== "") && // Garante que a linha não seja vazia
+        (row["FORNECEDOR"] && row["FORNECEDOR"].trim().toUpperCase() === "DESIGN") // Filtra apenas DESIGN
+      );
+      allData = allData.concat(dadosFiltrados);
+      callback();
+    },
+    error: function(err, file, inputElem, reason) {
+        console.error("PapaParse Error:", err, reason);
+        alert("Falha ao carregar dados da planilha. Verifique a URL e as permissões de compartilhamento.");
+        callback(); 
     }
   });
+}
+
+function inicializarTabela() {
+  if(allData.length===0) { 
+    document.querySelector("#planilha tbody").innerHTML = '<tr><td colspan="' + colunas.length + '" style="text-align:center; padding: 20px;">Nenhum dado encontrado para o fornecedor DESIGN ou erro ao carregar.</td></tr>';
+    
+    const headerRow = document.querySelector("#planilha thead tr.headers");
+    const filterRow = document.querySelector("#planilha thead tr.filters");
+    colunas.forEach(col => {
+      headerRow.innerHTML += `<th>${col}</th>`;
+      filterRow.innerHTML += `<th><button class="filter-select" data-column-name="${col}" disabled>Filtrar / Limpar</button></th>`;
+    });
+    return;
+  }
+  
+  const headerRow = document.querySelector("#planilha thead tr.headers");
+  const filterRow = document.querySelector("#planilha thead tr.filters");
+
+  colunas.forEach(col => {
+    headerRow.innerHTML += `<th>${col}</th>`;
+    
+    // Desabilita o filtro se a coluna for FORNECEDOR, pois o dado é fixo
+    const isDisabled = (col === "FORNECEDOR") ? 'disabled class="applied"' : '';
+    const buttonText = (col === "FORNECEDOR") ? "DESIGN" : "Filtrar / Limpar";
+
+    filterRow.innerHTML += `<th><button class="filter-select" data-column-name="${col}" ${isDisabled}>${buttonText}</button></th>`;
+  });
+
+  dataTable = $("#planilha").DataTable({
+    data: allData,
+    columns: colunas.map(c => ({
+      data: c,
+      render: function(data, type, row, meta){
+        const displayData = data || "";
+        if(c === "CARGAS" || c === "SENHA DE AGENDAMENTO"){
+          return `<span class="popup-cell" data-col="${c}" style="color:#000;cursor:pointer;" title="Clique para detalhes">${displayData}</span>`;
+        }
+        return displayData;
+      }
+    })),
+    deferRender: true,
+    scrollX: true,
+    scroller: true,
+    paging: true,
+    pageLength: 50,
+    lengthMenu: [25,50,100,200],
+    searching: true,
+    autoWidth: false,
+    columnDefs: [
+      { targets: 0, width: "350px", className: "senha-agendamento" },
+      { targets: 1, width: "100px", type: "date-br" },
+      { targets: 2, width: "120px" },
+      { targets: 3, width: "150px" },
+      { targets: 4, width: "150px" },
+      { targets: 5, width: "220px", className: "tipo-produto",
+        createdCell: function (td, cellData, rowData, row, col) {
+          const cellValue = cellData ? cellData.trim().toUpperCase() : '';
+          let color = '';
+          if (['ARMARIO', 'COMODA', 'COZINHA', 'MULTIUSO', 'PAINEL', 'ROUPEIRO', 'BERÇO', 'ARMARIOS', 'MODULOS', 'MODULO'].includes(cellValue)) {
+            color = '#FFFF00'; // Amarelo
+          } else if (['CELULAR', 'NOTEBOOK', 'IMPRESSORA', 'RELOGIOS', 'ASPIRADOR', 'TABLET'].includes(cellValue)) {
+            color = '#00BFFF'; // Azul
+          } else if (cellValue === 'MESA') {
+            color = '#4CAF50'; // Verde
+          }
+          if (color) {
+            $(td).css('background-color', color);
+          }
+        }
+      },
+      { targets: 6, width: "180px" }
+    ],
+    language: { 
+      decimal: ",",
+      thousands: ".",
+      search: "🔍 Buscar:",
+      zeroRecords: "Nenhum registro encontrado",
+      info: "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+      infoEmpty: "Mostrando 0 até 0 de 0 registros",
+      infoFiltered: "(filtrado de _MAX_ registros no total)",
+      lengthMenu: "Mostrar _MENU_ registros por página",
+      loadingRecords: "Carregando...",
+      processing: "Processando...",
+      paginate: { first: "Primeiro", previous: "Anterior", next: "Próximo", last: "Último" }
+    },
+    initComplete: function(){
+      const api = this.api();
+
+      // Funções de filtro e modal (mantidas as lógicas do filtro profissional)
+      function aplicarFiltrosSalvos() {
+        api.columns().every(function() {
+          const column = this;
+          const columnIndex = column.index();
+          // Ignora a aplicação de filtro salvo para a coluna FORNECEDOR, que é fixa.
+          if (colunas[columnIndex] === "FORNECEDOR") return; 
+
+          const savedFilter = localStorage.getItem(`agendamentoFiltroColuna${columnIndex}`);
+          if (savedFilter) {
+            const savedValues = JSON.parse(savedFilter);
+            if (savedValues.length > 0) {
+              const searchString = savedValues.map(v => '^' + $.fn.dataTable.util.escapeRegex(v) + '$').join('|');
+              column.search(searchString, true, false);
+            }
+          }
+        });
+        api.draw();
+      }
+
+      function atualizarBotaoFiltro() {
+        colunas.forEach((col, index) => {
+          if (col === "FORNECEDOR") return; // Ignora o botão FORNECEDOR
+          
+          const savedFilter = localStorage.getItem(`agendamentoFiltroColuna${index}`);
+          const selectedValues = savedFilter ? JSON.parse(savedFilter) : [];
+          const button = $(`.filter-select[data-column-name="${col}"]`);
+          if (selectedValues.length > 0) {
+            button.text("APLICADO").addClass("applied");
+          } else {
+            button.text("Filtrar / Limpar").removeClass("applied");
+          }
+        });
+      }
+
+      function aplicarFiltroModal() {
+        const columnIndex = $('#filterModalOverlay').data('column-index');
+        const selectedValues = $('#modalCheckboxList input:checked').map(function() {
+          return this.value;
+        }).get();
+        
+        localStorage.setItem(`agendamentoFiltroColuna${columnIndex}`, JSON.stringify(selectedValues));
+        
+        const searchString = selectedValues.map(v => '^' + $.fn.dataTable.util.escapeRegex(v) + '$').join('|');
+        
+        const column = dataTable.column(columnIndex);
+        if (searchString) {
+          column.search(searchString, true, false).draw();
+        } else {
+          column.search('').draw();
+        }
+        atualizarBotaoFiltro();
+      }
+      
+      // Lógica do Modal de Filtro (COM SOMBREADO/DESABILITAÇÃO)
+      $(document).on('click', '.filter-select:not([disabled])', function() {
+        const columnIndex = $(this).closest('th').index();
+        const columnName = colunas[columnIndex];
+        
+        const allDataForColumn = dataTable.rows().data().toArray();
+        let uniqueValues = [...new Set(allDataForColumn.map(row => row[columnName] || "" ))].filter(Boolean); 
+        
+        const filteredData = dataTable.rows({search: 'applied'}).data().toArray();
+        const filteredUniqueValues = new Set(filteredData.map(row => row[columnName] || "").filter(Boolean));
+
+        if (columnName === "DATA"){
+          uniqueValues.sort((a,b)=>{ 
+            const toTime=v=>{ 
+                const parts = v.split("/").map(Number); 
+                if(parts.length === 3) return new Date(parts[2], parts[1]-1, parts[0]).getTime(); 
+                return 0; 
+            }; 
+            return toTime(a)-toTime(b); 
+          });
+        } else { uniqueValues.sort(); }
+
+        const savedFilter = localStorage.getItem(`agendamentoFiltroColuna${columnIndex}`);
+        const savedValues = savedFilter ? JSON.parse(savedFilter) : [];
+        
+        let checkboxesHtml = '';
+        uniqueValues.forEach(value => {
+          const isChecked = savedValues.includes(value) ? 'checked' : '';
+          
+          const isAvailable = filteredUniqueValues.has(value); 
+          const optionClass = (isChecked || isAvailable) ? '' : 'disabled-option';
+          const disabledAttr = (isChecked || isAvailable) ? '' : 'disabled'; 
+          
+          checkboxesHtml += `
+            <label class="${optionClass}">
+                <input type="checkbox" value="${value}" ${isChecked} ${disabledAttr}> ${value}
+            </label>
+          `;
+        });
+
+        $('#modalTitle').text(`Filtrar por ${columnName}`);
+        $('#modalCheckboxList').html(checkboxesHtml);
+        $('#filterModalOverlay').data('column-index', columnIndex).show();
+      });
+
+      // Lógica dos botões do modal:
+      $('#btnSelectAll').on('click', function() {
+          $('#modalCheckboxList input[type="checkbox"]:not(:disabled)').prop('checked', true);
+      });
+
+      $('#btnSelectNone').on('click', function() {
+          $('#modalCheckboxList input[type="checkbox"]').prop('checked', false);
+      });
+      
+      $('#btnCancel').on('click', function() {
+          $('#filterModalOverlay').hide();
+      });
+
+      $('#btnApplyFilter').on('click', function() {
+          aplicarFiltroModal();
+          $('#filterModalOverlay').hide();
+      });
+
+      $('#filterModalOverlay').on('click touchstart', function(e) {
+        if ($(e.target).is('#filterModalOverlay')) {
+            $(this).hide();
+        }
+      });
+      
+      aplicarFiltrosSalvos();
+      atualizarBotaoFiltro();
+      
+      // Popup CARGAS e SENHA DE AGENDAMENTO
+      $('#planilha tbody').on('click', '.popup-cell', function(){
+        const conteudo = $(this).text();
+        const coluna = $(this).data('col');
+        const titulo = coluna === "CARGAS" ? "Detalhes da Carga" : "Senha de Agendamento";
+        $('#modalCarga h2').text(titulo);
+        const displayContent = coluna === "CARGAS" ? conteudo.replace(/,/g, ',<br>') : conteudo; 
+        $('#conteudoCarga').html(displayContent);
+        $('#modalCarga').css('display','flex');
+      });
+      $('.close-modal').on('click', function(){ $('#modalCarga').hide(); });
+      $('#modalCarga').on('click', function(e){ if(e.target.id === 'modalCarga') $(this).hide(); });
+    }
+  });
+}
+
+// Sequência de carregamento de dados (mantida)
+carregarDados(urls[0], function(){ carregarDados(urls[1], inicializarTabela); });
+
+
+// ************ FUNÇÕES PDF/EXCEL ************
+
+function hexToRgb(hex) {
+    let r = 0, g = 0, b = 0;
+    if (hex.length === 4) {
+        r = parseInt(hex[1] + hex[1], 16);
+        g = parseInt(hex[2] + hex[2], 16);
+        b = parseInt(hex[3] + hex[3], 16);
+    } else if (hex.length === 7) {
+        r = parseInt(hex.substring(1, 3), 16);
+        g = parseInt(hex.substring(3, 5), 16);
+        b = parseInt(hex.substring(5, 7), 16);
+    }
+    return [r, g, b];
+}
+
+function exportarPDF(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('landscape');
+  const tabela = dataTable;
+  const dadosVisiveis = tabela.rows({ search: 'applied' }).data().toArray();
+  const headers = colunas;
+  const rows = dadosVisiveis.map(r => colunas.map(c => r[c] || ""));
+  
+  const tipoDeProdutoIndex = colunas.indexOf("TIPO DE PRODUTO");
+
+  doc.autoTable({ 
+    head: [headers], 
+    body: rows, 
+    startY: 20, 
+    styles: { 
+      fontSize: 9, 
+      cellPadding: 3, 
+      halign: 'center', 
+      valign: 'middle'
+    },
+    headStyles: {
+      overflow: 'visible',
+      fontStyle: 'bold',
+      halign: 'center',
+      valign: 'top',
+      fontSize: 9,
+      minCellHeight: 15,
+      cellWidth: 'auto',
+      overflow: 'visible',
+      fillColor: hexToRgb('#CC0000') 
+    },
+    bodyStyles: {
+      overflow: 'linebreak',
+    },
+    columnStyles: {
+      0: { cellWidth: 50 }, // SENHA DE AGENDAMENTO
+      1: { cellWidth: 30 }, // DATA
+      2: { cellWidth: 30 }, // CENTRAL
+      3: { cellWidth: 35 }, // CARGAS
+      4: { cellWidth: 35 }, // FORNECEDOR
+      5: { cellWidth: 40 }, // TIPO DE PRODUTO (Mantido ajuste para o fundo da cor)
+      6: { cellWidth: 40 } // PRODUTO
+    },
+    didParseCell: function(cellData) {
+        if (cellData.section === 'body') {
+            // Aplica cor de fundo para TIPO DE PRODUTO no PDF
+            if (cellData.column.index === tipoDeProdutoIndex) {
+                const cellValue = cellData.cell.text.join('').trim().toUpperCase();
+                let color = '';
+                if (['ARMARIO', 'COMODA', 'COZINHA', 'MULTIUSO', 'PAINEL', 'ROUPEIRO', 'BERÇO', 'ARMARIOS', 'MODULOS', 'MODULO'].includes(cellValue)) {
+                    color = '#FFFF00'; // Amarelo
+                } else if (['CELULAR', 'NOTEBOOK', 'IMPRESSORA', 'RELOGIOS', 'ASPIRADOR', 'TABLET'].includes(cellValue)) {
+                    color = '#00BFFF'; // Azul
+                } else if (cellValue === 'MESA') {
+                    color = '#4CAF50'; // Verde
+                }
+                if (color) {
+                    cellData.cell.styles.fillColor = hexToRgb(color);
+                    cellData.cell.styles.textColor = (color === '#FFFF00') ? [0, 0, 0] : [0, 0, 0]; 
+                }
+            } 
+        }
+    }
+  });
+  
+  const dataHoje = new Date().toLocaleDateString('pt-BR');
+  doc.save(`agendamento_design_${dataHoje}.pdf`);
+}
+
+function exportarExcel(){
+  const tabela = dataTable;
+  const dadosVisiveis = tabela.rows({ search: 'applied' }).data().toArray();
+  const headers = colunas;
+  const rows = dadosVisiveis.map(r => colunas.map(c => r[c] || ""));
+  const ws_data = [headers, ...rows];
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(ws_data);
+  ws['!cols'] = headers.map(() => ({ wch: 20 }));
+  XLSX.utils.book_append_sheet(wb, ws, "AgendamentoDesign");
+  const dataHoje = new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
+  XLSX.writeFile(wb, `agendamento_design_${dataHoje}.xlsx`);
+}
 </script>
 
 </body>
