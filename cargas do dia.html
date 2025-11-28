@@ -159,17 +159,9 @@
             background-color: #6c757d; 
         }
 
-        /* NOVO CSS PARA SOMBREADO/OPACIDADE */
-        .disabled-option {
-            color: #a0a0a0; /* Cor cinza para o texto */
-            opacity: 0.6; /* Opacidade */
-            pointer-events: none; /* Impede clique na label */
-        }
-        /* Aplica o estilo ao checkbox, mas permite que ele seja selecionado via 'Marcar Todos' */
-        .disabled-option input[type="checkbox"] {
-            opacity: 0.6;
-        }
-        /* NOVO CSS PARA SOMBREADO/OPACIDADE */
+        /* Removido o CSS de sombreado, pois o modal agora só lista opções disponíveis */
+        /* .disabled-option {} */
+        /* .disabled-option input[type="checkbox"] {} */
 
         /* Novo CSS para o modal de cargas */
         #cargaModal {
@@ -282,7 +274,7 @@
         padding: 15px; 
         border: 2px solid #1E90FF; 
         border-radius: 8px; 
-        margin-top: 20px; /* Maior separação */
+        margin-top: 20px; 
         margin-left: auto;
         margin-right: auto;
         width: 100%; 
@@ -349,17 +341,17 @@ const coresStatus = {
     "REAGENDA": '#9B591B'
 };
 
-// --- NOVO CÓDIGO INSERIDO PARA PRÉ-FILTRAR A COLUNA FORNECEDOR ---
+// --- CÓDIGO PARA PRÉ-FILTRAR APENAS O FORNECEDOR "DESIGN" (mantido) ---
 // 1. Define o índice da coluna FORNECEDOR (coluna 6, índice 5, contando de 0)
 const fornecedorColumnIndex = 5; 
 
 // 2. Valor exato do fornecedor que queremos (DEVE SER CASE-SENSITIVE)
 const fornecedorAlvo = "DESIGN"; 
 
-// 3. Salva o filtro no localStorage. A função 'aplicarFiltrosSalvos' fará a leitura e a aplicação.
+// 3. Salva o filtro no localStorage para que seja aplicado no load da tabela
 const filtroDesignJSON = JSON.stringify([fornecedorAlvo]);
 localStorage.setItem(`filtroColuna${fornecedorColumnIndex}`, filtroDesignJSON);
-// --- FIM DO NOVO CÓDIGO ---
+// --- FIM DO CÓDIGO DE PRÉ-FILTRO ---
 
 let myChart;
 let dataTable;
@@ -381,11 +373,9 @@ function renderizarGrafico(data) {
     const chartData = Object.values(statusCounts);
     const backgroundColors = labels.map(label => coresStatus[label] || '#808080');
 
-    // --- NOVO CÓDIGO DE RESPONSIVIDADE ---
     // Define a posição da legenda: 'right' para telas grandes, 'bottom' para telas pequenas (celular).
-    const isMobile = window.innerWidth < 768; // Exemplo de breakpoint para celular/tablet
+    const isMobile = window.innerWidth < 768; 
     const legendPosition = isMobile ? 'bottom' : 'right';
-    // ------------------------------------
 
     if (myChart) {
         myChart.destroy();
@@ -410,13 +400,12 @@ function renderizarGrafico(data) {
             responsive: true,
             plugins: {
                 legend: {
-                    position: legendPosition, // USANDO POSIÇÃO DINÂMICA
+                    position: legendPosition, 
                     align: 'center', 
                 },
                 tooltip: {
                     callbacks: {
                         label: function(tooltipItem) {
-                            // O rótulo já contém a contagem (devido a countedLabels), mas mantemos a percentagem
                             const total = tooltipItem.dataset.data.reduce((sum, current) => sum + current, 0);
                             const value = tooltipItem.raw;
                             const percentage = (value / total * 100).toFixed(1);
@@ -530,7 +519,7 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function (results) 
             if (savedFilter) {
                 const savedValues = JSON.parse(savedFilter);
                 if (savedValues.length > 0) {
-                    // CORREÇÃO APLICADA: Adiciona ^ e $ para forçar a correspondência exata.
+                    // Adiciona ^ e $ para forçar a correspondência exata.
                     const searchString = savedValues.map(v => '^' + $.fn.dataTable.util.escapeRegex(v) + '$').join('|');
                     column.search(searchString, true, false);
                 }
@@ -585,36 +574,26 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function (results) 
         const columnIndex = $(this).closest('th').index();
         const columnName = colunasDesejadas[columnIndex];
         
-        // 1. Coletar TODOS os dados brutos (para a lista completa no modal)
-        const allData = dataTable.rows().data().toArray();
-        const allUniqueValues = [...new Set(allData.map(row => row[columnIndex]))].sort();
+        // **MODIFICAÇÃO CHAVE:** Coleta valores ÚNICOS APENAS das linhas VISÍVEIS 
+        // Como o filtro "DESIGN" é aplicado no load, esta lista SÓ terá valores do DESIGN.
+        // Isso impede que opções de outros fornecedores apareçam.
+        const filteredData = dataTable.rows({search: 'applied'}).data().toArray(); 
+        const uniqueValues = [...new Set(filteredData.map(row => row[columnIndex]))].sort();
         
-        // 2. Coletar APENAS os dados filtrados (para saber quais opções são "válidas")
-        const filteredData = dataTable.rows({search: 'applied'}).data().toArray();
-        const filteredUniqueValues = new Set(filteredData.map(row => row[columnIndex]));
-
         const savedFilter = localStorage.getItem(`filtroColuna${columnIndex}`);
         const savedValues = savedFilter ? JSON.parse(savedFilter) : [];
         
         let checkboxesHtml = '';
-        allUniqueValues.forEach(value => {
+        uniqueValues.forEach(value => {
             if (value) {
                 const trimmedValue = value.trim(); 
+                // Verifica se este valor está salvo/marcado
                 const isChecked = savedValues.includes(trimmedValue) ? 'checked' : '';
                 
-                // NOVO: Verifica se o valor existe nos dados atualmente filtrados.
-                const isAvailable = filteredUniqueValues.has(value); 
-                
-                // Aplica a classe 'disabled-option' (sombreado) e impede a interação.
-                const optionClass = isAvailable ? '' : 'disabled-option';
-                const disabledAttr = isAvailable ? '' : 'disabled'; // Desabilita o checkbox em si
-                
-                // Remove o atributo 'disabled' se já estiver marcado, para que o usuário possa desmarcar um filtro antigo.
-                const finalDisabledAttr = isChecked ? '' : disabledAttr;
-                
+                // Agora, a lista de opções exibida será apenas a relevante para o que está na tela (DESIGN).
                 checkboxesHtml += `
-                    <label class="${optionClass}">
-                        <input type="checkbox" value="${trimmedValue}" ${isChecked} ${finalDisabledAttr}> ${trimmedValue}
+                    <label>
+                        <input type="checkbox" value="${trimmedValue}" ${isChecked}> ${trimmedValue}
                     </label>
                 `;
             }
@@ -625,19 +604,16 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function (results) 
         $('#filterModalOverlay').data('column-index', columnIndex).show();
     });
 
-    // Lógica para os botões do modal de filtro (AJUSTADO CONFORME REQUISIÇÃO)
+    // Lógica para os botões do modal de filtro
     $('#btnSelectAll').on('click', function() {
-        // Agora, só marca os que não estão DISABLED, respeitando o sombreamento
-        $('#modalCheckboxList input[type="checkbox"]:not(:disabled)').prop('checked', true); 
+        // Marca todos os itens visíveis na lista (que agora são só os do DESIGN)
+        $('#modalCheckboxList input[type="checkbox"]').prop('checked', true); 
     });
 
-    // AJUSTE: Apenas desmarca as checkboxes, NÃO limpa o filtro. O filtro só muda em 'Aplicar Filtro'.
     $('#btnSelectNone').on('click', function() {
         $('#modalCheckboxList input[type="checkbox"]').prop('checked', false); 
-        // O filtro ativo (se houver) permanece. O usuário deve clicar em 'Aplicar Filtro' para aplicar a desmarcação.
     });
     
-    // NOVO: Botão Cancelar apenas fecha o modal, mantendo o filtro atual.
     $('#btnCancel').on('click', function() {
         $('#filterModalOverlay').hide();
     });
@@ -647,10 +623,8 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function (results) 
         $('#filterModalOverlay').hide();
     });
 
-    // AJUSTE: Clicar fora do modal (overlay) APENAS fecha. O filtro ativo (se houver) permanece.
     $('#filterModalOverlay').on('click touchstart', function(e) {
         if ($(e.target).is('#filterModalOverlay')) {
-            // O filtro *existente* não é limpo, apenas o modal é escondido.
             $(this).hide();
         }
     });
@@ -675,9 +649,10 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function (results) 
             return this.value;
         }).get();
         
-        localStorage.setItem(`filtroColuna${columnIndex}`, JSON.DOMAIN(selectedValues));
+        // CORRIGIDO: de JSON.DOMAIN para JSON.stringify
+        localStorage.setItem(`filtroColuna${columnIndex}`, JSON.stringify(selectedValues));
         
-        // CORREÇÃO APLICADA: Adiciona ^ e $ para forçar a correspondência exata.
+        // Adiciona ^ e $ para forçar a correspondência exata.
         const searchString = selectedValues.map(v => '^' + $.fn.dataTable.util.escapeRegex(v) + '$').join('|');
         
         const column = dataTable.column(columnIndex);
@@ -738,7 +713,7 @@ function exportPDF(table){
     const data = table.rows({search:"applied"}).data().toArray();
     const centralIndex = colunasDesejadas.indexOf("CENTRAL"); 
     const statusIndex = colunasDesejadas.indexOf("STATUS");
-    const tipoDeProdutoIndex = colunasDesejadas.indexOf("TIPO DE PRODUTO"); // <--- NOVO
+    const tipoDeProdutoIndex = colunasDesejadas.indexOf("TIPO DE PRODUTO"); 
     
     // 1. Adicionar o Título do Relatório
     doc.setFontSize(16);
@@ -755,7 +730,7 @@ function exportPDF(table){
     const visibleRowIndexes = table.rows({search: 'applied'}).indexes().toArray();
 
     
-    // 2. CÁLCULO E TABELA DE STATUS DE RESUMO (O NOVO REGISTRO MAGNÍFICO)
+    // 2. CÁLCULO E TABELA DE STATUS DE RESUMO 
     const statusCounts = {};
     data.forEach(row => {
         const status = row[statusIndex];
@@ -841,7 +816,7 @@ function exportPDF(table){
                     }
                 }
                 
-                // Aplica a cor de fundo para a coluna TIPO DE PRODUTO <-- NOVO CÓDIGO
+                // Aplica a cor de fundo para a coluna TIPO DE PRODUTO 
                 if (cellData.column.index === tipoDeProdutoIndex) {
                     const cellValue = cellData.cell.text.join('').trim().toUpperCase();
                     let color = '';
