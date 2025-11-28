@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8" />
-<title>AGENDAMENTO - MÓVEIS SIMONETTI</title>
+<title>AGENDAMENTO DESIGN - MÓVEIS SIMONETTI</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -253,7 +253,7 @@ function logout(){
 </script>
 
 <header>
-  <h1>AGENDAMENTO - MÓVEIS SIMONETTI</h1>
+  <h1>AGENDAMENTO DESIGN - MÓVEIS SIMONETTI</h1>
 </header>
 
 <div class="menu">
@@ -318,22 +318,50 @@ $.fn.dataTable.ext.type.order['date-br-pre'] = function(data) {
 };
 
 function carregarDados(url, callback) {
-  Papa.parse(url, { download:true, header:true, complete:function(results){
-      const dadosFiltrados = results.data.filter(row => colunas.some(c => row[c] && row[c].trim() !== ""));
+  Papa.parse(url, { 
+    download:true, 
+    header:true, 
+    complete:function(results){
+      // FILTRO APLICADO AQUI: apenas linhas onde FORNECEDOR é 'DESIGN'
+      const dadosFiltrados = results.data.filter(row => 
+        colunas.some(c => row[c] && row[c].trim() !== "") && // Garante que a linha não seja vazia
+        (row["FORNECEDOR"] && row["FORNECEDOR"].trim().toUpperCase() === "DESIGN") // Filtra apenas DESIGN
+      );
       allData = allData.concat(dadosFiltrados);
       callback();
-  }});
+    },
+    error: function(err, file, inputElem, reason) {
+        console.error("PapaParse Error:", err, reason);
+        alert("Falha ao carregar dados da planilha. Verifique a URL e as permissões de compartilhamento.");
+        callback(); 
+    }
+  });
 }
 
 function inicializarTabela() {
-  if(allData.length===0) return;
+  if(allData.length===0) { 
+    document.querySelector("#planilha tbody").innerHTML = '<tr><td colspan="' + colunas.length + '" style="text-align:center; padding: 20px;">Nenhum dado encontrado para o fornecedor DESIGN ou erro ao carregar.</td></tr>';
+    
+    const headerRow = document.querySelector("#planilha thead tr.headers");
+    const filterRow = document.querySelector("#planilha thead tr.filters");
+    colunas.forEach(col => {
+      headerRow.innerHTML += `<th>${col}</th>`;
+      filterRow.innerHTML += `<th><button class="filter-select" data-column-name="${col}" disabled>Filtrar / Limpar</button></th>`;
+    });
+    return;
+  }
   
   const headerRow = document.querySelector("#planilha thead tr.headers");
   const filterRow = document.querySelector("#planilha thead tr.filters");
 
   colunas.forEach(col => {
     headerRow.innerHTML += `<th>${col}</th>`;
-    filterRow.innerHTML += `<th><button class="filter-select" data-column-name="${col}">Filtrar / Limpar</button></th>`;
+    
+    // Desabilita o filtro se a coluna for FORNECEDOR, pois o dado é fixo
+    const isDisabled = (col === "FORNECEDOR") ? 'disabled class="applied"' : '';
+    const buttonText = (col === "FORNECEDOR") ? "DESIGN" : "Filtrar / Limpar";
+
+    filterRow.innerHTML += `<th><button class="filter-select" data-column-name="${col}" ${isDisabled}>${buttonText}</button></th>`;
   });
 
   dataTable = $("#planilha").DataTable({
@@ -396,15 +424,18 @@ function inicializarTabela() {
     initComplete: function(){
       const api = this.api();
 
+      // Funções de filtro e modal (mantidas as lógicas do filtro profissional)
       function aplicarFiltrosSalvos() {
         api.columns().every(function() {
           const column = this;
           const columnIndex = column.index();
+          // Ignora a aplicação de filtro salvo para a coluna FORNECEDOR, que é fixa.
+          if (colunas[columnIndex] === "FORNECEDOR") return; 
+
           const savedFilter = localStorage.getItem(`agendamentoFiltroColuna${columnIndex}`);
           if (savedFilter) {
             const savedValues = JSON.parse(savedFilter);
             if (savedValues.length > 0) {
-              // Garante a correspondência exata do filtro (^ e $)
               const searchString = savedValues.map(v => '^' + $.fn.dataTable.util.escapeRegex(v) + '$').join('|');
               column.search(searchString, true, false);
             }
@@ -415,6 +446,8 @@ function inicializarTabela() {
 
       function atualizarBotaoFiltro() {
         colunas.forEach((col, index) => {
+          if (col === "FORNECEDOR") return; // Ignora o botão FORNECEDOR
+          
           const savedFilter = localStorage.getItem(`agendamentoFiltroColuna${index}`);
           const selectedValues = savedFilter ? JSON.parse(savedFilter) : [];
           const button = $(`.filter-select[data-column-name="${col}"]`);
@@ -434,7 +467,6 @@ function inicializarTabela() {
         
         localStorage.setItem(`agendamentoFiltroColuna${columnIndex}`, JSON.stringify(selectedValues));
         
-        // Garante a correspondência exata do filtro (^ e $)
         const searchString = selectedValues.map(v => '^' + $.fn.dataTable.util.escapeRegex(v) + '$').join('|');
         
         const column = dataTable.column(columnIndex);
@@ -446,22 +478,17 @@ function inicializarTabela() {
         atualizarBotaoFiltro();
       }
       
-      // **Lógica do Modal de Filtro (COM SOMBREADO/DESABILITAÇÃO)**
-      $(document).on('click', '.filter-select', function() {
+      // Lógica do Modal de Filtro (COM SOMBREADO/DESABILITAÇÃO)
+      $(document).on('click', '.filter-select:not([disabled])', function() {
         const columnIndex = $(this).closest('th').index();
         const columnName = colunas[columnIndex];
         
-        // 1. Coletar TODOS os dados brutos (para a lista completa no modal)
         const allDataForColumn = dataTable.rows().data().toArray();
         let uniqueValues = [...new Set(allDataForColumn.map(row => row[columnName] || "" ))].filter(Boolean); 
         
-        // 2. Coletar APENAS os dados filtrados (para saber quais opções são "válidas")
         const filteredData = dataTable.rows({search: 'applied'}).data().toArray();
-        // Cria um Set para pesquisa rápida (apenas valores que existem nas linhas filtradas)
         const filteredUniqueValues = new Set(filteredData.map(row => row[columnName] || "").filter(Boolean));
 
-
-        // Ordenação específica para a coluna "DATA"
         if (columnName === "DATA"){
           uniqueValues.sort((a,b)=>{ 
             const toTime=v=>{ 
@@ -480,11 +507,8 @@ function inicializarTabela() {
         uniqueValues.forEach(value => {
           const isChecked = savedValues.includes(value) ? 'checked' : '';
           
-          // Lógica de Sombreado
           const isAvailable = filteredUniqueValues.has(value); 
-          // Aplica a classe 'disabled-option' (sombreado) se NÃO estiver disponível E NÃO estiver marcado
           const optionClass = (isChecked || isAvailable) ? '' : 'disabled-option';
-          // Desabilita o checkbox se NÃO estiver disponível E NÃO estiver marcado (se estiver marcado, permite desmarcar)
           const disabledAttr = (isChecked || isAvailable) ? '' : 'disabled'; 
           
           checkboxesHtml += `
@@ -500,9 +524,7 @@ function inicializarTabela() {
       });
 
       // Lógica dos botões do modal:
-      
       $('#btnSelectAll').on('click', function() {
-          // Marca apenas os que NÃO estão DISABLED
           $('#modalCheckboxList input[type="checkbox"]:not(:disabled)').prop('checked', true);
       });
 
@@ -534,7 +556,6 @@ function inicializarTabela() {
         const coluna = $(this).data('col');
         const titulo = coluna === "CARGAS" ? "Detalhes da Carga" : "Senha de Agendamento";
         $('#modalCarga h2').text(titulo);
-        // Adiciona quebra de linha para a coluna CARGAS
         const displayContent = coluna === "CARGAS" ? conteudo.replace(/,/g, ',<br>') : conteudo; 
         $('#conteudoCarga').html(displayContent);
         $('#modalCarga').css('display','flex');
@@ -545,12 +566,12 @@ function inicializarTabela() {
   });
 }
 
+// Sequência de carregamento de dados (mantida)
 carregarDados(urls[0], function(){ carregarDados(urls[1], inicializarTabela); });
 
 
-// ************ FUNÇÕES PDF/EXCEL ATUALIZADAS ************
+// ************ FUNÇÕES PDF/EXCEL ************
 
-// Função Auxiliar para Conversão de Cor (Necessário para o PDF)
 function hexToRgb(hex) {
     let r = 0, g = 0, b = 0;
     if (hex.length === 4) {
@@ -594,7 +615,7 @@ function exportarPDF(){
       minCellHeight: 15,
       cellWidth: 'auto',
       overflow: 'visible',
-      fillColor: hexToRgb('#CC0000') // Cor do cabeçalho
+      fillColor: hexToRgb('#CC0000') 
     },
     bodyStyles: {
       overflow: 'linebreak',
@@ -605,7 +626,7 @@ function exportarPDF(){
       2: { cellWidth: 30 }, // CENTRAL
       3: { cellWidth: 35 }, // CARGAS
       4: { cellWidth: 35 }, // FORNECEDOR
-      5: { cellWidth: 40 }, // TIPO DE PRODUTO (AJUSTADO de 50 para 40)
+      5: { cellWidth: 40 }, // TIPO DE PRODUTO (Mantido ajuste para o fundo da cor)
       6: { cellWidth: 40 } // PRODUTO
     },
     didParseCell: function(cellData) {
@@ -623,7 +644,6 @@ function exportarPDF(){
                 }
                 if (color) {
                     cellData.cell.styles.fillColor = hexToRgb(color);
-                    // Garante que o texto seja legível (preto para amarelo, branco para azul/verde)
                     cellData.cell.styles.textColor = (color === '#FFFF00') ? [0, 0, 0] : [0, 0, 0]; 
                 }
             } 
@@ -632,7 +652,7 @@ function exportarPDF(){
   });
   
   const dataHoje = new Date().toLocaleDateString('pt-BR');
-  doc.save(`agendamento_${dataHoje}.pdf`);
+  doc.save(`agendamento_design_${dataHoje}.pdf`);
 }
 
 function exportarExcel(){
@@ -644,9 +664,9 @@ function exportarExcel(){
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet(ws_data);
   ws['!cols'] = headers.map(() => ({ wch: 20 }));
-  XLSX.utils.book_append_sheet(wb, ws, "Agendamento");
+  XLSX.utils.book_append_sheet(wb, ws, "AgendamentoDesign");
   const dataHoje = new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
-  XLSX.writeFile(wb, `agendamento_${dataHoje}.xlsx`);
+  XLSX.writeFile(wb, `agendamento_design_${dataHoje}.xlsx`);
 }
 </script>
 
