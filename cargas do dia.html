@@ -349,6 +349,18 @@ const coresStatus = {
     "REAGENDA": '#9B591B'
 };
 
+// --- NOVO CÓDIGO INSERIDO PARA PRÉ-FILTRAR A COLUNA FORNECEDOR ---
+// 1. Define o índice da coluna FORNECEDOR (coluna 6, índice 5, contando de 0)
+const fornecedorColumnIndex = 5; 
+
+// 2. Valor exato do fornecedor que queremos (DEVE SER CASE-SENSITIVE)
+const fornecedorAlvo = "DESIGN"; 
+
+// 3. Salva o filtro no localStorage. A função 'aplicarFiltrosSalvos' fará a leitura e a aplicação.
+const filtroDesignJSON = JSON.stringify([fornecedorAlvo]);
+localStorage.setItem(`filtroColuna${fornecedorColumnIndex}`, filtroDesignJSON);
+// --- FIM DO NOVO CÓDIGO ---
+
 let myChart;
 let dataTable;
 let coresData = []; 
@@ -663,7 +675,7 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function (results) 
             return this.value;
         }).get();
         
-        localStorage.setItem(`filtroColuna${columnIndex}`, JSON.stringify(selectedValues));
+        localStorage.setItem(`filtroColuna${columnIndex}`, JSON.DOMAIN(selectedValues));
         
         // CORREÇÃO APLICADA: Adiciona ^ e $ para forçar a correspondência exata.
         const searchString = selectedValues.map(v => '^' + $.fn.dataTable.util.escapeRegex(v) + '$').join('|');
