@@ -326,7 +326,7 @@
 const sheetID = "1Ore02M4GARvE6hldNDZmiVNDrABb4dgaZO7wlMY-fjs";
 const gid = "2090543957";
 const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetID}/export?format=csv&gid=${gid}`;
-const colunasDesejadas = ["ORDEM DE AGENDA","DATA","CENTRAL","CARGAS","STATUS","FORNECEDOR","TIPO DE PRODUTO"];
+const colunasDesejadas = ["ORDEM DE AGENDA","DATA","CENTRAL","CARGAS","STATUS","FORNECEDOR","TIPO DE PRODUTO", "BOX"];
 const coresStatus = {
     "CARGA RECEBIDA": '#4CAF50',
     // Cor escura para melhor visibilidade do texto branco.
@@ -705,138 +705,115 @@ function hexToRgb(hex) {
     return [r, g, b];
 }
 
+// Substitua a função exportPDF antiga por esta:
 
-function exportPDF(table){
+async function exportPDF(table) {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({orientation:"landscape"});
-    const headers = colunasDesejadas;
-    const data = table.rows({search:"applied"}).data().toArray();
-    const centralIndex = colunasDesejadas.indexOf("CENTRAL"); 
-    const statusIndex = colunasDesejadas.indexOf("STATUS");
-    const tipoDeProdutoIndex = colunasDesejadas.indexOf("TIPO DE PRODUTO"); 
-    
-    // 1. Adicionar o Título do Relatório
-    doc.setFontSize(16);
-    doc.text("Relatório de Cargas do Dia", doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
-    
-    // Encontrar o total de cargas filtradas
+    const doc = new jsPDF({ orientation: "landscape" });
+    const data = table.rows({ search: "applied" }).data().toArray();
     const totalCargas = data.length;
-    let currentY = 25;
-    doc.setFontSize(12);
-    doc.text(`TOTAL DE CARGAS: ${totalCargas}`, 10, currentY);
-    currentY += 5; // Adiciona um pequeno espaço
-    
-    // Obter os índices das linhas visíveis na tabela (após a filtragem)
-    const visibleRowIndexes = table.rows({search: 'applied'}).indexes().toArray();
+    const dataHora = new Date().toLocaleString('pt-BR');
 
-    
-    // 2. CÁLCULO E TABELA DE STATUS DE RESUMO 
+    // Índices das colunas para formatação
+    const statusIdx = colunasDesejadas.indexOf("STATUS");
+    const centralIdx = colunasDesejadas.indexOf("CENTRAL");
+    const prodIdx = colunasDesejadas.indexOf("TIPO DE PRODUTO");
+    const visibleRowIndexes = table.rows({ search: 'applied' }).indexes().toArray();
+
+    // 1. CABEÇALHO PROFISSIONAL (Estilo Recebimento)
+    doc.setFillColor(40, 40, 40); // Cinza grafite escuro
+    doc.rect(0, 0, doc.internal.pageSize.getWidth(), 35, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
+    doc.text("MÓVEIS SIMONETTI - CARGAS DO DIA", 15, 15);
+
+    // Caixa de Destaque para o Total
+    doc.setFillColor(204, 0, 0); // Vermelho Simonetti
+    doc.roundedRect(15, 22, 55, 10, 2, 2, 'F');
+    doc.setFontSize(10);
+    doc.text(`TOTAL DE CARGAS: ${totalCargas}`, 20, 28.5);
+
+    doc.setFontSize(9);
+    doc.text(`Gerado em: ${dataHora}`, doc.internal.pageSize.getWidth() - 15, 28.5, { align: 'right' });
+
+    // 2. RESUMO POR STATUS (Tabela lateral/pequena antes da principal)
     const statusCounts = {};
     data.forEach(row => {
-        const status = row[statusIndex];
-        if (status) {
-            statusCounts[status] = (statusCounts[status] || 0) + 1;
+        const status = row[statusIdx];
+        if (status) statusCounts[status] = (statusCounts[status] || 0) + 1;
+    });
+    const summaryBody = Object.keys(statusCounts).map(status => [status, statusCounts[status]]);
+
+    doc.autoTable({
+        startY: 40,
+        head: [['Resumo por Status', 'Qtd']],
+        body: summaryBody,
+        theme: 'grid',
+        margin: { left: 15 },
+        tableWidth: 80, // Largura reduzida para o resumo
+        styles: { fontSize: 7, halign: 'center' },
+        headStyles: { fillColor: [80, 80, 80], textColor: [255, 255, 255] },
+        didParseCell: function (cellData) {
+            if (cellData.section === 'body' && cellData.column.index === 0) {
+                const statusVal = cellData.cell.raw;
+                const color = coresStatus[statusVal];
+                if (color) {
+                    cellData.cell.styles.fillColor = hexToRgb(color);
+                    cellData.cell.styles.textColor = [255, 255, 255];
+                    cellData.cell.styles.fontStyle = 'bold';
+                }
+            }
         }
     });
-    
-    // Preparar dados para a tabela de resumo
-    const summaryBody = Object.keys(statusCounts).map(status => {
-        return [status, statusCounts[status]];
-    });
 
-    if (summaryBody.length > 0) {
-        doc.autoTable({
-            startY: currentY + 5, 
-            head:[['Status', 'Quantidade']], 
-            body: summaryBody,
-            margin: { left: 10, right: doc.internal.pageSize.getWidth() - 80 }, // Tabela menor e alinhada à esquerda
-            styles: { fontSize: 8, cellPadding: 2, textColor: [0, 0, 0], fontStyle: 'normal', halign: 'center' },
-            headStyles: { 
-                fillColor: hexToRgb('#4682B4'), // Cor do cabeçalho
-                textColor: [255, 255, 255],
-                fontStyle: 'bold',
-                halign: 'center'
-            },
-            columnStyles: {
-                0: { halign: 'left', fontStyle: 'bold', textColor: [255, 255, 255] }, // Coluna Status: Texto branco e negrito
-                1: { halign: 'center', fontStyle: 'bold', textColor: [255, 255, 255] } // Coluna Quantidade: Texto branco e negrito
-            },
-            didParseCell: function(cellData) {
-                // Aplica a cor de fundo nas células de resumo
-                if (cellData.section === 'body') {
-                    const statusValue = cellData.row.raw[0]; // Pega o status do primeiro elemento da linha
-                    const color = coresStatus[statusValue] || '#808080';
-                    cellData.cell.styles.fillColor = hexToRgb(color);
-                    cellData.cell.styles.textColor = [255, 255, 255]; // Texto branco garantido
-                }
-            },
-            didDrawPage: function(data) {
-                // O jsPDF-AutoTable retorna o final da tabela no data.cursor.y
-                currentY = data.cursor.y;
-            }
-        });
-    } else {
-        currentY += 10;
-    }
-
-    doc.setFontSize(12);
-    doc.text(`Tabela de Cargas (${totalCargas} registros):`, 10, currentY + 5);
-    
-    // 3. Tabela de dados principal
+    // 3. TABELA PRINCIPAL DE DADOS
     doc.autoTable({
-        startY: currentY + 10, // Começa abaixo da tabela de resumo
-        head:[headers], 
-        body:data, 
-        styles:{fontSize:8, cellPadding:2, halign: 'center'}, 
-        headStyles: {
-            halign: 'center',
-            textColor: [255, 255, 255], 
-            fillColor: hexToRgb('#4682B4')
-        }, 
-        didParseCell: function(cellData) {
-            // Aplica estilos de célula SOMENTE ao corpo da tabela (section === 'body')
+        startY: doc.lastAutoTable.finalY + 10,
+        head: [colunasDesejadas],
+        body: data,
+        theme: 'grid',
+        styles: { fontSize: 7, halign: 'center', overflow: 'linebreak' },
+        headStyles: { fillColor: [100, 100, 100], textColor: [255, 255, 255], fontStyle: 'bold' },
+        didParseCell: function (cellData) {
             if (cellData.section === 'body') {
                 const originalRowIndex = visibleRowIndexes[cellData.row.index];
-                
-                // Aplica a cor do status (fundo) e do texto (branco)
-                if (cellData.column.index === statusIndex) {
-                    const statusValue = cellData.cell.text.join('').trim();
-                    const color = coresStatus[statusValue] || '#4682B4'; 
-                    
-                    cellData.cell.styles.fillColor = hexToRgb(color);
-                    cellData.cell.styles.textColor = [255, 255, 255]; // Texto branco
-                    cellData.cell.styles.fontStyle = 'bold';
-                } 
-                
-                // Aplica a cor vermelha para a coluna CENTRAL
-                if (cellData.column.index === centralIndex) {
-                    if (coresCentral[originalRowIndex] === 'red') {
-                        cellData.cell.styles.textColor = [255, 0, 0]; // Vermelho
+
+                // Pintar Status
+                if (cellData.column.index === statusIdx) {
+                    const val = cellData.cell.text[0];
+                    const color = coresStatus[val];
+                    if (color) {
+                        cellData.cell.styles.fillColor = hexToRgb(color);
+                        cellData.cell.styles.textColor = [255, 255, 255];
                         cellData.cell.styles.fontStyle = 'bold';
                     }
                 }
-                
-                // Aplica a cor de fundo para a coluna TIPO DE PRODUTO 
-                if (cellData.column.index === tipoDeProdutoIndex) {
-                    const cellValue = cellData.cell.text.join('').trim().toUpperCase();
+
+                // Pintar Tipo de Produto (Fundo Amarelo/Azul etc)
+                if (cellData.column.index === prodIdx) {
+                    const cellValue = cellData.cell.text[0].toUpperCase();
                     let color = '';
-                    if (['ARMARIO', 'COMODA', 'COZINHA', 'BERÇO', 'MULTIUSO', 'PAINEL', 'ROUPEIRO','ARMARIOS', 'MODULOS', 'MODULO'].includes(cellValue)) {
-                        color = '#FFFF00'; // Amarelo
-                    } else if (['CELULAR', 'NOTEBOOK', 'IMPRESSORA', 'TABLET','RELÓGIO'].includes(cellValue)) {
-                        color = '#00BFFF'; // Azul Céu Profundo
-                    } else if (cellValue === 'MESA') {
-                        color = '#4CAF50'; // Verde
-                    }
+                    if (['ARMARIO', 'COMODA', 'COZINHA', 'BERÇO', 'MULTIUSO', 'PAINEL', 'ROUPEIRO', 'ARMARIOS', 'MODULOS', 'MODULO'].includes(cellValue)) color = '#FFFF00';
+                    else if (['CELULAR', 'NOTEBOOK', 'IMPRESSORA', 'TABLET', 'RELÓGIO', 'RELOGIOS'].includes(cellValue)) color = '#00BFFF';
+                    else if (cellValue === 'MESA') color = '#4CAF50';
+                    
                     if (color) {
                         cellData.cell.styles.fillColor = hexToRgb(color);
-                        // Garante que o texto seja legível
-                        cellData.cell.styles.textColor = (color === '#FFFF00') ? [0, 0, 0] : [0, 0, 0]; 
+                        cellData.cell.styles.textColor = [0, 0, 0];
                     }
+                }
+
+                // Alerta Vermelho na Central (conforme lógica do seu HTML)
+                if (cellData.column.index === centralIdx && coresCentral[originalRowIndex] === 'red') {
+                    cellData.cell.styles.textColor = [255, 0, 0];
+                    cellData.cell.styles.fontStyle = 'bold';
                 }
             }
         }
     });
-    doc.save("Cargas.pdf");
+
+    doc.save(`Cargas_do_Dia_Simonetti_${totalCargas}.pdf`);
 }
 
 function exportExcel(table){
@@ -847,10 +824,8 @@ function exportExcel(table){
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.aoa_to_sheet(ws_data);
     XLSX.utils.book_append_sheet(wb,ws,"Cargas.xlsx");
-    XLSX.writeFile(wb, "Cargas.xlsx"); // Função para salvar o arquivo XLSX
+    XLSX.writeFile(wb, "Cargas.xlsx");
 }
 </script>
-
-
 </body>
 </html>
