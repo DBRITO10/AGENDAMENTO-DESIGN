@@ -21,167 +21,148 @@
             --secondary: #3b82f6;
             --success: #10b981;
             --danger: #ef4444;
-            --warning: #f59e0b;
-            --bg: #f8fafc;
-            --text: #1e293b;
+            --bg: #f1f5f9;
+            --border: #cbd5e1;
         }
 
         body { 
             background-color: var(--bg); 
-            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
-            margin: 0; padding: 20px; color: var(--text);
+            font-family: 'Inter', sans-serif; 
+            margin: 0; padding: 15px; color: #1e293b;
         }
 
         /* Top Bar */
         #userBar { 
-            background: white; padding: 15px 25px; 
+            background: white; padding: 12px 20px; 
             display: flex; justify-content: space-between; align-items: center; 
-            border-radius: 12px; margin-bottom: 25px; 
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            border-radius: 10px; margin-bottom: 20px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         
-        .user-info { display: flex; align-items: center; gap: 12px; font-weight: 600; color: var(--primary); }
-        
-        .btn-logout { 
-            background: #fee2e2; color: #991b1b; border: none; 
-            padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;
-            transition: 0.3s;
+        .user-section { display: flex; align-items: center; gap: 15px; }
+        .btn-voltar { 
+            background: #f1f5f9; color: var(--primary); border: 1px solid var(--border);
+            padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: 0.3s;
         }
-        .btn-logout:hover { background: #fecaca; }
+        .btn-voltar:hover { background: #e2e8f0; }
+        
+        .user-name { font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
 
-        /* KPI Cards */
-        .dashboard-header { 
+        /* KPI e Gráfico */
+        .dashboard-top { 
             display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-            gap: 20px; margin-bottom: 30px; 
+            gap: 20px; margin-bottom: 20px; 
         }
 
-        .card { 
-            background: white; padding: 20px; border-radius: 16px; 
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-        }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .kpi { text-align: center; }
+        .kpi-value { font-size: 36px; font-weight: 800; color: var(--primary); display: block; }
+        .kpi-label { color: #64748b; font-size: 12px; font-weight: 600; text-transform: uppercase; }
 
-        .kpi-card { text-align: center; display: flex; flex-direction: column; justify-content: center; }
-        .kpi-value { font-size: 32px; font-weight: 800; color: var(--primary); }
-        .kpi-label { color: #64748b; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; margin-top: 5px; }
+        .chart-container { height: 220px; position: relative; }
 
-        /* Chart Area */
-        .chart-container { height: 250px; position: relative; }
-
-        /* Export Buttons */
-        .export-actions { display: flex; gap: 10px; margin-bottom: 20px; }
-        .btn-action { 
-            display: flex; align-items: center; gap: 8px;
-            padding: 10px 20px; border-radius: 8px; border: none;
-            color: white; font-weight: 600; cursor: pointer; transition: 0.2s;
+        /* Botões de Ação */
+        .actions { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn-draw { 
+            flex: 1; padding: 12px; border-radius: 8px; border: none; 
+            color: white; font-weight: 600; cursor: pointer; display: flex; 
+            justify-content: center; align-items: center; gap: 10px; transition: 0.2s;
         }
         .btn-pdf { background: var(--danger); }
         .btn-excel { background: var(--success); }
-        .btn-action:hover { opacity: 0.9; transform: translateY(-2px); }
 
-        /* Tabela Profissional */
-        .table-container { 
-            background: white; padding: 20px; border-radius: 16px; 
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); overflow: hidden;
+        /* Tabela Estilo Grade Profissional */
+        .table-card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        
+        table.dataTable { border-collapse: collapse !important; width: 100% !important; }
+        table.dataTable thead th { 
+            background: #f8fafc !important; color: #334155 !important;
+            padding: 12px !important; font-size: 11px !important;
+            border: 1px solid var(--border) !important; text-align: center !important;
         }
 
-        table.dataTable { border: none !important; margin-bottom: 20px !important; }
-        table.dataTable thead th { 
-            background: #f1f5f9 !important; color: #475569 !important;
-            padding: 15px !important; font-size: 12px !important;
-            text-transform: uppercase !important; border-bottom: 2px solid #e2e8f0 !important;
+        table.dataTable tbody td { 
+            padding: 12px !important; border: 1px solid #e2e8f0 !important; 
+            text-align: center !important; font-size: 13px;
         }
 
         .filter-btn { 
-            width: 100%; margin-top: 8px; padding: 6px; border-radius: 6px;
-            border: 1px solid #cbd5e1; background: white; color: #64748b;
-            font-size: 11px; cursor: pointer; font-weight: 600;
+            width: 100%; margin-top: 8px; padding: 5px; border-radius: 4px;
+            border: 1px solid var(--border); background: white; font-size: 10px;
+            cursor: pointer; font-weight: bold;
         }
-        .filter-btn.active { background: var(--secondary); color: white; border-color: var(--primary); }
-        .filter-fixed { background: #1e293b; color: white; cursor: default; }
+        .filter-btn.active { background: var(--secondary); color: white; }
 
-        .status-badge { 
-            padding: 6px 12px; border-radius: 20px; font-size: 11px; 
-            font-weight: 700; color: white; text-transform: uppercase;
+        .status-pill { 
+            padding: 4px 10px; border-radius: 15px; font-size: 10px; 
+            font-weight: 800; color: white; display: inline-block;
         }
 
-        /* Modal Design */
+        /* Modal */
         .modal-mask { 
-            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6); 
             z-index: 9999; display: none; justify-content: center; align-items: center;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(2px);
         }
-        .modal-box { 
-            background: white; width: 95%; max-width: 450px; border-radius: 20px;
-            overflow: hidden; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-        }
-        .modal-header { padding: 20px; background: var(--primary); color: white; font-weight: 700; }
-        .modal-body { padding: 15px; max-height: 60vh; overflow-y: auto; }
+        .modal-box { background: white; width: 90%; max-width: 400px; border-radius: 15px; overflow: hidden; }
+        .modal-header { padding: 15px; background: var(--primary); color: white; font-weight: bold; }
+        .modal-body { padding: 10px; max-height: 50vh; overflow-y: auto; }
         .modal-footer { padding: 15px; display: flex; gap: 10px; background: #f8fafc; }
-        .modal-footer button { 
-            flex: 1; padding: 12px; border: none; border-radius: 10px; 
-            color: white; font-weight: 700; cursor: pointer;
-        }
+        .modal-footer button { flex: 1; padding: 10px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
 
-        /* Responsividade */
         @media (max-width: 768px) {
-            body { padding: 10px; }
-            .dashboard-header { grid-template-columns: 1fr; }
-            .export-actions { flex-direction: column; }
+            .dashboard-top { grid-template-columns: 1fr; }
+            .actions { flex-direction: column; }
         }
     </style>
 </head>
 <body>
 
 <div id="userBar">
-    <div class="user-info">
-        <i class="fas fa-user-circle fa-2x"></i>
-        <span id="welcomeUser">Carregando...</span>
+    <div class="user-section">
+        <button class="btn-voltar" onclick="history.back()"><i class="fas fa-arrow-left"></i></button>
+        <div class="user-name">
+            <i class="fas fa-circle-user"></i>
+            <span id="userName">Usuário</span>
+        </div>
     </div>
-    <button class="btn-logout" onclick="logout()">
-        <i class="fas fa-sign-out-alt"></i> Sair
-    </button>
+    <button style="border:none; background:none; color:var(--danger); font-weight:bold; cursor:pointer;" onclick="logout()">Sair</button>
 </div>
 
-<div class="dashboard-header">
-    <div class="card kpi-card">
-        <span class="kpi-label">Volume Total de Cargas</span>
-        <span class="kpi-value" id="totalValue">0</span>
+<div class="dashboard-top">
+    <div class="card kpi">
+        <span class="kpi-label">Total de Cargas Encontradas</span>
+        <span class="kpi-value" id="kpiTotal">0</span>
     </div>
-    
     <div class="card">
         <div class="chart-container">
-            <canvas id="statusChart"></canvas>
+            <canvas id="mainChart"></canvas>
         </div>
     </div>
 </div>
 
-<div class="export-actions">
-    <button class="btn-action btn-pdf" onclick="pdfPro()">
-        <i class="fas fa-file-pdf"></i> Exportar PDF
-    </button>
-    <button class="btn-action btn-excel" onclick="excelPro()">
-        <i class="fas fa-file-excel"></i> Exportar Excel
-    </button>
+<div class="actions">
+    <button class="btn-draw btn-pdf" onclick="exportarPDF()"><i class="fas fa-file-pdf"></i> Gerar PDF</button>
+    <button class="btn-draw btn-excel" onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Gerar Excel</button>
 </div>
 
-<div class="table-container">
-    <table id="planilha" class="display nowrap" style="width:100%">
+<div class="table-card">
+    <table id="tabelaPrincipal" class="display nowrap">
         <thead>
-            <tr id="hNames"></tr>
-            <tr id="hFilters"></tr>
+            <tr id="trNames"></tr>
+            <tr id="trFilters"></tr>
         </thead>
         <tbody></tbody>
     </table>
 </div>
 
-<div class="modal-mask" id="mMask">
+<div class="modal-mask" id="modalFiltro">
     <div class="modal-box">
-        <div class="modal-header">Selecione o Filtro</div>
-        <div class="modal-body" id="mBody"></div>
+        <div class="modal-header" id="modalTitulo">Filtrar</div>
+        <div class="modal-body" id="modalConteudo"></div>
         <div class="modal-footer">
-            <button style="background:#64748b" onclick="selAll(false)">Limpar</button>
-            <button style="background:var(--success)" onclick="applyM()">Aplicar Filtro</button>
-            <button style="background:#cbd5e1; color:#1e293b" onclick="$('#mMask').hide()">Fechar</button>
+            <button style="background:#94a3b8" onclick="limparFiltroLocal()">Limpar</button>
+            <button style="background:var(--success)" onclick="aplicarFiltroLocal()">Aplicar</button>
         </div>
     </div>
 </div>
@@ -190,136 +171,129 @@
 const sheetID = "1Ore02M4GARvE6hldNDZmiVNDrABb4dgaZO7wlMY-fjs";
 const gid = "2090543957";
 const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetID}/export?format=csv&gid=${gid}`;
-const cols = ["ORDEM DE AGENDA","DATA","CENTRAL","CARGAS","STATUS","FORNECEDOR","TIPO DE PRODUTO", "BOX"];
-const statusColors = { "CARGA RECEBIDA": '#10b981', "NO PATIO - FICOU P/ AMANHÃ": '#3b82f6', "CANCELADA": '#ef4444', "SOB AJUSTE": '#8b5cf6', "NO PATIO - SOB ENCAIXE": '#f59e0b', "NO PATIO - FICOU DE ONTEM": '#ec4899', "EM RECEBIMENTO": '#f97316', "NO PATIO": '#06b6d4', "EM ATRASO": '#dc2626', "REAGENDA": '#78350f' };
+const colunas = ["ORDEM DE AGENDA","DATA","CENTRAL","CARGAS","STATUS","FORNECEDOR","TIPO DE PRODUTO", "BOX"];
+const cores = { "CARGA RECEBIDA": '#10b981', "NO PATIO - FICOU P/ AMANHÃ": '#3b82f6', "CANCELADA": '#ef4444', "SOB AJUSTE": '#8b5cf6', "NO PATIO - SOB ENCAIXE": '#f59e0b', "NO PATIO - FICOU DE ONTEM": '#ec4899', "EM RECEBIMENTO": '#f97316', "NO PATIO": '#06b6d4', "EM ATRASO": '#dc2626', "REAGENDA": '#78350f' };
 
-let table, chart;
+let datatable, chart;
 
-// Login
 if (localStorage.getItem("isLoggedIn") !== "true") window.location.href = "login.html";
-document.getElementById("welcomeUser").textContent = localStorage.getItem("username") || "Usuário";
+document.getElementById("userName").textContent = localStorage.getItem("username") || "Convidado";
 function logout(){ localStorage.clear(); window.location.href = "login.html"; }
 
-// Data Load
-Papa.parse(csvUrl, { download: true, header: true, complete: function(res) {
-    let raw = res.data.filter(r => (r["FORNECEDOR"] || "").trim().toUpperCase() === "DESIGN");
-    
-    const hNames = document.getElementById("hNames");
-    const hFilters = document.getElementById("hFilters");
-    
-    cols.forEach(c => {
-        hNames.innerHTML += `<th>${c}</th>`;
-        if(c === "FORNECEDOR") hFilters.innerHTML += `<th><button class="filter-btn filter-fixed">DESIGN</button></th>`;
-        else hFilters.innerHTML += `<th><button class="filter-btn" data-col="${c}"><i class="fas fa-filter"></i> Filtrar</button></th>`;
+Papa.parse(csvUrl, { download: true, header: true, complete: function(results) {
+    // Filtro inicial e REMOÇÃO DE LINHAS EM BRANCO
+    let dados = results.data.filter(r => {
+        const fornecedor = (r["FORNECEDOR"] || "").trim().toUpperCase();
+        const agenda = (r["ORDEM DE AGENDA"] || "").trim();
+        return fornecedor === "DESIGN" && agenda !== ""; // Garante que a linha não está vazia
     });
 
-    const tbody = document.querySelector("#planilha tbody");
-    raw.forEach(r => {
-        let rowHtml = "<tr>";
-        cols.forEach(c => {
-            let val = (r[c] || "").trim() || "SEM INF";
-            let content = val;
-            if(c === "STATUS") content = `<span class="status-badge" style="background:${statusColors[val] || '#64748b'}">${val}</span>`;
-            if((c === "DATA" || c === "CENTRAL") && val.startsWith('*')) content = `<b style="color:red">${val.replace(/\*/g,'')}</b>`;
-            rowHtml += `<td>${content}</td>`;
+    const trN = document.getElementById("trNames");
+    const trF = document.getElementById("trFilters");
+    
+    colunas.forEach(c => {
+        trN.innerHTML += `<th>${c}</th>`;
+        if(c === "FORNECEDOR") trF.innerHTML += `<th><button class="filter-btn" style="background:#334155; color:white; cursor:default">DESIGN</button></th>`;
+        else trF.innerHTML += `<th><button class="filter-btn" data-col="${c}"><i class="fas fa-search"></i> Filtrar</button></th>`;
+    });
+
+    const tbody = document.querySelector("#tabelaPrincipal tbody");
+    dados.forEach(r => {
+        let tr = "<tr>";
+        colunas.forEach(c => {
+            let v = (r[c] || "").trim() || "SEM INF";
+            let html = v;
+            if(c === "STATUS") html = `<span class="status-pill" style="background:${cores[v] || '#64748b'}">${v}</span>`;
+            if((c === "DATA" || c === "CENTRAL") && v.startsWith('*')) html = `<span style="color:red; font-weight:bold">${v.replace(/\*/g,'')}</span>`;
+            tr += `<td>${html}</td>`;
         });
-        tbody.innerHTML += rowHtml + "</tr>";
+        tbody.innerHTML += tr + "</tr>";
     });
 
-    table = $("#planilha").DataTable({ 
+    datatable = $("#tabelaPrincipal").DataTable({ 
         paging: false, scrollX: true, info: false, order: [[0, 'desc']],
-        language: { search: "_INPUT_", searchPlaceholder: "Pesquisar na base..." }
+        language: { search: "Busca Rápida:" }
     });
 
-    // Restaurar filtros
-    cols.forEach((c, i) => {
-        const saved = JSON.parse(localStorage.getItem('filter_'+i) || "[]");
+    // Restaurar Filtros Salvos
+    colunas.forEach((c, i) => {
+        const saved = JSON.parse(localStorage.getItem('f_'+i) || "[]");
         if(saved.length > 0) {
-            const reg = saved.map(v => '^'+$.fn.dataTable.util.escapeRegex(v)+'$').join('|');
-            table.column(i).search(reg, true, false);
-            $(`.filter-btn[data-col="${c}"]`).addClass('active').html('<i class="fas fa-check"></i> Ativo');
+            datatable.column(i).search(saved.map(v => '^'+$.fn.dataTable.util.escapeRegex(v)+'$').join('|'), true, false);
+            $(`.filter-btn[data-col="${c}"]`).addClass('active').text('Ativo');
         }
     });
 
-    table.on('draw', () => {
-        $('#totalValue').text(table.rows({search:'applied'}).count());
-        updateChart();
+    datatable.on('draw', () => {
+        $('#kpiTotal').text(datatable.rows({search:'applied'}).count());
+        renderChart();
     });
-    table.draw();
+    datatable.draw();
 }});
 
-// Modal Logic
-$(document).on('click', '.filter-btn:not(.filter-fixed)', function() {
+$(document).on('click', '.filter-btn:not([style*="cursor:default"])', function() {
     const idx = $(this).closest('th').index();
-    const all = table.column(idx, {filter:'none'}).nodes().map(n => $(n).text().trim()).unique().sort().toArray();
-    const curr = table.column(idx).search();
-    table.column(idx).search('').draw();
-    const valid = table.column(idx, {filter:'applied'}).nodes().map(n => $(n).text().trim()).unique().toArray();
-    table.column(idx).search(curr).draw();
-    const saved = JSON.parse(localStorage.getItem('filter_'+idx) || "[]");
+    const all = datatable.column(idx, {filter:'none'}).nodes().map(n => $(n).text().trim()).unique().sort().toArray();
+    const valid = datatable.column(idx, {filter:'applied'}).nodes().map(n => $(n).text().trim()).unique().toArray();
+    const saved = JSON.parse(localStorage.getItem('f_'+idx) || "[]");
     
-    let h = '';
+    let html = '';
     all.forEach(v => {
         if(!v || v === "SEM INF") return;
-        const isSel = saved.includes(v) ? 'checked' : '';
-        const isOk = valid.includes(v);
-        h += `<label style="display:flex; padding:10px; border-bottom:1px solid #eee; cursor:pointer; opacity:${isOk || isSel ? 1 : 0.4}">
-            <input type="checkbox" value="${v}" ${isSel} ${!isOk && !isSel ? 'disabled' : ''}> 
-            <span style="margin-left:10px">${v}</span>
+        const isS = saved.includes(v) ? 'checked' : '';
+        const isO = valid.includes(v);
+        html += `<label style="display:flex; align-items:center; padding:10px; border-bottom:1px solid #f1f5f9; cursor:pointer; opacity:${isO || isS ? 1 : 0.3}">
+            <input type="checkbox" value="${v}" ${isS} ${!isO && !isS ? 'disabled' : ''}> <span style="margin-left:10px">${v}</span>
         </label>`;
     });
-    $('#mBody').html(h);
-    $('#mMask').data('idx', idx).fadeIn().css('display','flex');
+    $('#modalConteudo').html(html);
+    $('#modalTitulo').text("Filtrar: " + colunas[idx]);
+    $('#modalFiltro').data('idx', idx).fadeIn().css('display','flex');
 });
 
-function applyM() {
-    const idx = $('#mMask').data('idx');
-    const vals = $('#mBody input:checked').map(function(){ return this.value; }).get();
-    localStorage.setItem('filter_'+idx, JSON.stringify(vals));
-    table.column(idx).search(vals.map(v => '^'+$.fn.dataTable.util.escapeRegex(v)+'$').join('|'), true, false).draw();
-    location.reload(); // Recarrega para manter a integridade visual
+function aplicarFiltroLocal() {
+    const idx = $('#modalFiltro').data('idx');
+    const vals = $('#modalConteudo input:checked').map(function(){ return this.value; }).get();
+    localStorage.setItem('f_'+idx, JSON.stringify(vals));
+    location.reload(); 
 }
 
-function updateChart() {
+function limparFiltroLocal() {
+    const idx = $('#modalFiltro').data('idx');
+    localStorage.removeItem('f_'+idx);
+    location.reload();
+}
+
+function renderChart() {
     const d = {};
-    const sIdx = cols.indexOf("STATUS");
-    table.rows({search:'applied'}).nodes().each(n => {
+    const sIdx = colunas.indexOf("STATUS");
+    datatable.rows({search:'applied'}).nodes().each(n => {
         const s = $(n).find('td').eq(sIdx).text().trim();
         d[s] = (d[s] || 0) + 1;
     });
     if(chart) chart.destroy();
-    chart = new Chart(document.getElementById('statusChart'), {
+    chart = new Chart(document.getElementById('mainChart'), {
         type: 'doughnut',
-        data: {
-            labels: Object.keys(d),
-            datasets: [{ data: Object.values(d), backgroundColor: Object.keys(d).map(k => statusColors[k]), borderWidth: 0 }]
-        },
-        options: { 
-            maintainAspectRatio: false, 
-            plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } },
-            cutout: '70%'
-        }
+        data: { labels: Object.keys(d), datasets: [{ data: Object.values(d), backgroundColor: Object.keys(d).map(k => cores[k]), borderWidth: 0 }] },
+        options: { maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } }, cutout: '70%' }
     });
 }
 
-function pdfPro() {
+function exportarPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('l', 'mm', 'a4');
+    doc.setFontSize(14);
     doc.text("Relatório de Cargas DESIGN", 14, 15);
-    doc.autoTable({
-        head: [cols],
-        body: table.rows({search:'applied'}).data().toArray().map(r => r.map(c => $('<div>').html(c).text())),
-        theme: 'grid',
-        headStyles: { fillColor: [30, 58, 138] }
-    });
-    doc.save("Relatorio_Design.pdf");
+    const data = datatable.rows({search:'applied'}).nodes().map(n => $(n).find('td').map(function(){ return $(this).text(); }).get()).toArray();
+    doc.autoTable({ head: [colunas], body: data, startY: 20, theme: 'grid', headStyles: { fillColor: [30, 58, 138] }, styles: { halign: 'center' } });
+    doc.save("Cargas_Design.pdf");
 }
 
-function excelPro() {
-    const data = table.rows({search:'applied'}).data().toArray().map(r => r.map(c => $('<div>').html(c).text()));
-    const ws = XLSX.utils.aoa_to_sheet([cols, ...data]);
+function exportarExcel() {
+    const data = datatable.rows({search:'applied'}).nodes().map(n => $(n).find('td').map(function(){ return $(this).text(); }).get()).toArray();
+    const ws = XLSX.utils.aoa_to_sheet([colunas, ...data]);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Cargas");
+    XLSX.utils.book_append_sheet(wb, ws, "Dados");
     XLSX.writeFile(wb, "Cargas_Design.xlsx");
 }
 </script>
