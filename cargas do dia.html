@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8" />
-    <title>CARGAS DO DIA - DESIGN</title>
+    <title>SISTEMA DE CARGAS - DESIGN</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1E90FF">
@@ -20,238 +20,243 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css">
 
     <style>
-        body { background-color: #F0F8FF; font-family: 'Segoe UI', Arial, sans-serif; color: #333; padding: 10px; margin: 0; }
+        /* Reset e Preenchimento Total */
+        * { box-sizing: border-box; }
+        body { background-color: #F0F8FF; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 10px; width: 100vw; overflow-x: hidden; }
         
-        /* Cabeçalho superior */
-        #userBar { background:#1E90FF; padding:10px 20px; display:flex; justify-content:space-between; align-items:center; border-radius:8px; margin-bottom:15px; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        #welcomeUser { font-weight: 600; font-size: 16px; } /* Alinhado à esquerda por padrão no flex */
-        
-        h1 { background: white; color: #1E90FF; padding: 15px; border-radius: 8px; font-size: 24px; text-align: center; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        /* Barra de Usuário */
+        #userBar { background:#1E90FF; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; border-radius:8px; margin-bottom:10px; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.15); width: 100%; }
+        #welcomeContainer { display: flex; align-items: center; gap: 15px; }
+        #welcomeUser { font-weight: bold; font-size: 16px; }
 
-        /* Tabela Profissional */
-        .dataTables_wrapper { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        table.dataTable thead th { background-color: #4682B4 !important; color: white !important; padding: 12px 8px !important; border: 1px solid #ddd !important; }
-        
-        /* Botões de Filtro na Tabela */
-        .filter-select { width: 90%; padding: 5px; font-size: 11px; background: #E0F2F1; border: 1px solid #B2DFDB; border-radius: 4px; cursor: pointer; margin-top: 5px; font-weight: bold; color: #00796B; transition: 0.3s; }
-        .filter-select:hover { background: #B2DFDB; }
-        .filter-select.applied { background: #FFD700 !important; color: #000; border-color: #FFA000; }
-        .filter-fixed { width: 90%; padding: 5px; font-size: 11px; background: #333; color: #fff; border: none; border-radius: 4px; margin-top: 5px; cursor: default; }
+        h1 { background: white; color: #1E90FF; padding: 12px; border-radius: 8px; font-size: 22px; text-align: center; margin: 10px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
-        /* Estilização das exportações */
-        .export-buttons { display: flex; gap: 10px; margin-bottom: 15px; justify-content: center; }
-        .btn-exp { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
-        .btn-exp:active { transform: scale(0.95); }
-        .btn-pdf { background-color: #e74c3c; }
-        .btn-excel { background-color: #27ae60; }
+        /* Gráfico Topzera no Topo */
+        #topArea { display: flex; flex-direction: column; align-items: center; width: 100%; margin-bottom: 20px; }
+        #chartWrapper { width: 100%; max-width: 450px; height: 320px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        #totalVisual { background: #1E90FF; color: white; padding: 10px 25px; border-radius: 30px; font-weight: bold; font-size: 18px; margin-top: -15px; z-index: 2; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
 
-        /* Status e Células */
-        .status-cell { font-weight: bold; color: white !important; border-radius: 4px; text-shadow: 1px 1px 1px rgba(0,0,0,0.3); }
+        /* Exportação */
+        .export-row { display: flex; gap: 10px; justify-content: center; margin: 15px 0; width: 100%; }
+        .btn-export { border: none; padding: 10px 20px; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; }
+        .btn-pdf { background: #d32f2f; }
+        .btn-excel { background: #2e7d32; }
+
+        /* Container da Tabela - Preenchimento Máximo no PC */
+        .main-container { width: 100%; max-width: 100%; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         
+        table.dataTable { width: 100% !important; margin: 0 !important; }
+        thead th { background-color: #4682B4 !important; color: white !important; font-size: 13px; text-transform: uppercase; border: 1px solid #36648B !important; }
+        
+        /* Estilo dos Filtros nas Colunas */
+        .filter-btn { width: 95%; margin-top: 5px; padding: 4px; font-size: 11px; border-radius: 4px; border: 1px solid #ccc; cursor: pointer; font-weight: bold; background: #f9f9f9; }
+        .filter-btn.active { background: #FFD700; border-color: #DAA520; color: #000; }
+        .filter-fixed { background: #333; color: #fff; cursor: default; border: none; }
+
+        /* Células e Status */
+        td { font-size: 13px; padding: 10px !important; text-align: center !important; }
+        .status-pill { font-weight: bold; color: white !important; border-radius: 4px; padding: 4px 8px; display: inline-block; width: 100%; text-shadow: 1px 1px 1px rgba(0,0,0,0.2); }
+
         /* Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; display: none; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
-        .modal-content { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
-        .modal-checkbox-list label { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; }
-        .disabled-option { color: #ccc; background: #fafafa; cursor: not-allowed; }
+        .modal-mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: none; justify-content: center; align-items: center; }
+        .modal-box { background: white; width: 90%; max-width: 400px; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; max-height: 85vh; }
+        .modal-header { background: #1E90FF; color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; position: sticky; top: 0; }
+        .modal-body { padding: 10px; overflow-y: auto; flex-grow: 1; }
+        .modal-footer { padding: 15px; background: #f1f1f1; display: flex; gap: 8px; }
+        .modal-footer button { flex: 1; padding: 10px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; }
+        
+        label.opt { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #eee; transition: 0.2s; cursor: pointer; }
+        label.opt:hover { background: #e3f2fd; }
+        label.opt.locked { opacity: 0.4; background: #f5f5f5; cursor: not-allowed; }
 
-        #modalButtons { display: flex; gap: 5px; margin-bottom: 15px; position: sticky; top: -25px; background: white; padding: 10px 0; z-index: 5; border-bottom: 2px solid #1E90FF; }
-        #modalButtons button { flex: 1; padding: 8px; border: none; border-radius: 4px; color: white; font-weight: bold; cursor: pointer; font-size: 11px; }
-
-        /* Celular */
         @media (max-width: 768px) {
-            h1 { font-size: 18px; }
-            .btn-exp { flex: 1; font-size: 12px; }
-            #welcomeUser { font-size: 13px; }
+            #chartWrapper { height: 280px; }
+            .btn-export { flex: 1; font-size: 12px; padding: 10px 5px; }
         }
     </style>
 </head>
 <body>
 
 <div id="userBar">
-    <div style="display: flex; align-items: center; gap: 15px;">
-        <button onclick="history.back()" style="background: none; border: none; color: white; font-size: 22px; cursor: pointer;">←</button>
+    <div id="welcomeContainer">
+        <button onclick="history.back()" style="background:none; border:none; color:white; font-size:24px; cursor:pointer;">←</button>
         <span id="welcomeUser"></span>
     </div>
-    <button onclick="logout()" style="background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 5px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Sair</button>
+    <button onclick="logout()" style="background:rgba(255,255,255,0.2); border:1px solid white; color:white; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">Sair</button>
 </div>
 
-<h1>CARGAS DO DIA</h1>
+<h1>GERENCIAMENTO DE CARGAS - DESIGN</h1>
 
-<div class="export-buttons">
-    <button class="btn-exp btn-pdf" onclick="exportarPDF()">
-        <span>📄</span> PDF Profissional
-    </button>
-    <button class="btn-exp btn-excel" onclick="exportarExcel()">
-        <span>📊</span> Excel (Planilha)
-    </button>
+<div id="topArea">
+    <div id="chartWrapper">
+        <canvas id="statusChart"></canvas>
+    </div>
+    <div id="totalVisual">Cargas: 0</div>
 </div>
 
-<div style="max-width: 1100px; margin: 0 auto;">
-    <div id="totalCargasVisual" style="text-align: center; font-size: 20px; font-weight: bold; color: #1E90FF; margin-bottom: 15px;">Total de Cargas: 0</div>
-    
-    <table id="planilha" class="display nowrap" style="width:100%">
+<div class="export-row">
+    <button class="btn-export btn-pdf" onclick="pdfPro()">📄 Exportar PDF Pro</button>
+    <button class="btn-export btn-excel" onclick="excelPro()">📊 Planilha Excel</button>
+</div>
+
+<div class="main-container">
+    <table id="planilha" class="display nowrap">
         <thead>
-            <tr id="headerRow"></tr>
-            <tr id="filterRow"></tr>
+            <tr id="hNames"></tr>
+            <tr id="hFilters"></tr>
         </thead>
         <tbody></tbody>
     </table>
-
-    <div style="margin-top: 30px; display: flex; justify-content: center;">
-        <div style="width: 100%; max-width: 500px; height: 350px;">
-            <canvas id="statusChart"></canvas>
-        </div>
-    </div>
 </div>
 
-<div id="filterModalOverlay" class="modal-overlay">
-    <div class="modal-content">
-        <div id="modalButtons">
-            <button style="background:#3498db" id="btnAll">Todos</button>
-            <button style="background:#e67e22" id="btnNone">Limpar</button>
-            <button style="background:#2ecc71" id="btnApply">Aplicar</button>
-            <button style="background:#95a5a6" id="btnBack">Voltar</button>
+<div class="modal-mask" id="mMask">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span id="mTitle">Filtrar</span>
+            <span style="cursor:pointer" onclick="$('#mMask').hide()">✕</span>
         </div>
-        <div id="modalList" class="modal-checkbox-list"></div>
+        <div class="modal-body" id="mBody"></div>
+        <div class="modal-footer">
+            <button style="background:#2196F3" onclick="selAll(true)">Todos</button>
+            <button style="background:#f44336" onclick="selAll(false)">Limpar</button>
+            <button style="background:#4CAF50" onclick="applyM()">Aplicar</button>
+        </div>
     </div>
 </div>
 
 <script>
-// Configurações Iniciais
 const sheetID = "1Ore02M4GARvE6hldNDZmiVNDrABb4dgaZO7wlMY-fjs";
 const gid = "2090543957";
 const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetID}/export?format=csv&gid=${gid}`;
-const colunas = ["ORDEM DE AGENDA","DATA","CENTRAL","CARGAS","STATUS","FORNECEDOR","TIPO DE PRODUTO", "BOX"];
-const coresStatus = { "CARGA RECEBIDA": '#4CAF50', "NO PATIO - FICOU P/ AMANHÃ": '#3ACFB9', "CANCELADA": '#7a002b', "SOB AJUSTE": '#8B27F5', "NO PATIO - SOB ENCAIXE": '#ff7625', "NO PATIO - FICOU DE ONTEM": '#B249BF', "EM RECEBIMENTO": '#FFC107', "NO PATIO": '#03A9F4', "EM ATRASO": '#F44336', "REAGENDA": '#9B591B' };
+const cols = ["ORDEM DE AGENDA","DATA","CENTRAL","CARGAS","STATUS","FORNECEDOR","TIPO DE PRODUTO", "BOX"];
+const statusColors = { "CARGA RECEBIDA": '#4CAF50', "NO PATIO - FICOU P/ AMANHÃ": '#3ACFB9', "CANCELADA": '#7a002b', "SOB AJUSTE": '#8B27F5', "NO PATIO - SOB ENCAIXE": '#ff7625', "NO PATIO - FICOU DE ONTEM": '#B249BF', "EM RECEBIMENTO": '#FFC107', "NO PATIO": '#03A9F4', "EM ATRASO": '#F44336', "REAGENDA": '#9B591B' };
 
-let dataTable, myChart;
+let table, chart;
 
-// Login
 if (localStorage.getItem("isLoggedIn") !== "true") window.location.href = "login.html";
-document.getElementById("welcomeUser").textContent = "Bem-vindo, " + (localStorage.getItem("username") || "Usuário");
+document.getElementById("welcomeUser").textContent = "Olá, " + (localStorage.getItem("username") || "Usuário");
 function logout(){ localStorage.clear(); window.location.href = "login.html"; }
 
-// Processamento
-Papa.parse(csvUrl, { download: true, header: true, complete: function(results) {
-    let data = results.data.filter(r => (r["FORNECEDOR"] || "").trim().toUpperCase() === "DESIGN");
+Papa.parse(csvUrl, { download: true, header: true, complete: function(res) {
+    let raw = res.data.filter(r => (r["FORNECEDOR"] || "").trim().toUpperCase() === "DESIGN");
     
-    const hRow = document.getElementById("headerRow");
-    const fRow = document.getElementById("filterRow");
+    const hNames = document.getElementById("hNames");
+    const hFilters = document.getElementById("hFilters");
     
-    colunas.forEach(c => {
-        hRow.innerHTML += `<th>${c}</th>`;
-        if(c === "FORNECEDOR") fRow.innerHTML += `<th><button class="filter-fixed">DESIGN</button></th>`;
-        else fRow.innerHTML += `<th><button class="filter-select" data-col="${c}">Filtrar</button></th>`;
+    cols.forEach(c => {
+        hNames.innerHTML += `<th>${c}</th>`;
+        if(c === "FORNECEDOR") hFilters.innerHTML += `<th><button class="filter-btn filter-fixed">DESIGN</button></th>`;
+        else hFilters.innerHTML += `<th><button class="filter-btn" data-col="${c}">Filtrar</button></th>`;
     });
 
     const tbody = document.querySelector("#planilha tbody");
-    data.forEach(row => {
-        let tr = "<tr>";
-        colunas.forEach(c => {
-            let val = (row[c] || "").trim() || "SEM INF";
-            let style = "";
-            if(c === "STATUS") style = `class="status-cell" style="background:${coresStatus[val] || '#4682B4'}"`;
+    raw.forEach(r => {
+        let rowHtml = "<tr>";
+        cols.forEach(c => {
+            let val = (r[c] || "").trim() || "SEM INF";
+            let css = "";
+            if(c === "STATUS") css = `class="status-pill" style="background:${statusColors[val] || '#666'}"`;
             if((c === "DATA" || c === "CENTRAL") && val.startsWith('*')) {
-                val = val.replace(/\*/g, '');
-                style = `style="color:red; font-weight:bold"`;
+                val = val.replace(/\*/g,'');
+                css = `style="color:red; font-weight:bold"`;
             }
-            tr += `<td ${style}>${val}</td>`;
+            rowHtml += `<td><span ${css}>${val}</span></td>`;
         });
-        tbody.innerHTML += tr + "</tr>";
+        tbody.innerHTML += rowHtml + "</tr>";
     });
 
-    dataTable = $("#planilha").DataTable({
-        paging: false, scrollX: true, info: false, order: [[0, 'desc']],
-        language: { search: "Buscar:" }
-    });
+    table = $("#planilha").DataTable({ paging: false, scrollX: true, info: false, order: [[0, 'desc']] });
 
-    // Cascata e Modal
-    $(document).on('click', '.filter-select', function() {
-        const colIdx = $(this).closest('th').index();
-        const allVals = dataTable.column(colIdx, {filter:'none'}).data().unique().sort().toArray();
+    // Cascata
+    $(document).on('click', '.filter-btn:not(.filter-fixed)', function() {
+        const idx = $(this).closest('th').index();
+        const colName = cols[idx];
+        const all = table.column(idx, {filter:'none'}).data().unique().sort().toArray();
         
-        const currentSearch = dataTable.column(colIdx).search();
-        dataTable.column(colIdx).search('').draw();
-        const possible = dataTable.column(colIdx, {filter:'applied'}).data().unique().toArray();
-        dataTable.column(colIdx).search(currentSearch).draw();
+        const curr = table.column(idx).search();
+        table.column(idx).search('').draw();
+        const validNow = table.column(idx, {filter:'applied'}).data().unique().toArray();
+        table.column(idx).search(curr).draw();
 
-        const saved = JSON.parse(localStorage.getItem('f_'+colIdx) || "[]");
-        let html = '';
-        allVals.forEach(v => {
-            const isChecked = saved.includes(v) ? 'checked' : '';
-            const isValid = possible.includes(v);
-            const isDis = (!isValid && !saved.includes(v));
-            html += `<label class="${isDis ? 'disabled-option' : ''}">
-                <input type="checkbox" value="${v}" ${isChecked} ${isDis ? 'disabled' : ''}> ${v}
+        const saved = JSON.parse(localStorage.getItem('filter_'+idx) || "[]");
+        let h = '';
+        all.forEach(v => {
+            const isSel = saved.includes(v) ? 'checked' : '';
+            const isOk = validNow.includes(v);
+            const lock = (!isOk && !saved.includes(v));
+            h += `<label class="opt ${lock ? 'locked' : ''}">
+                <input type="checkbox" value="${v}" ${isSel} ${lock ? 'disabled' : ''}> <span style="margin-left:8px">${v}</span>
             </label>`;
         });
-        $('#modalList').html(html);
-        $('#filterModalOverlay').data('idx', colIdx).fadeIn(200).css('display','flex');
+        $('#mTitle').text(colName);
+        $('#mBody').html(h);
+        $('#mMask').data('idx', idx).fadeIn(200).css('display','flex');
     });
 
-    $('#btnApply').click(function() {
-        const idx = $('#filterModalOverlay').data('idx');
-        const sel = $('#modalList input:checked').map(function(){ return this.value; }).get();
-        localStorage.setItem('f_'+idx, JSON.stringify(sel));
-        const reg = sel.map(v => '^'+$.fn.dataTable.util.escapeRegex(v)+'$').join('|');
-        dataTable.column(idx).search(reg, true, false).draw();
-        
-        const btn = $(`.filter-select:eq(${idx > 5 ? idx-1 : idx})`); // Ajuste de índice por causa do botão fixo
-        sel.length > 0 ? btn.addClass('applied').text('Ativo') : btn.removeClass('applied').text('Filtrar');
-        $('#filterModalOverlay').hide();
-    });
-
-    $('#btnAll').click(() => $('#modalList input:not(:disabled)').prop('checked', true));
-    $('#btnNone').click(() => $('#modalList input').prop('checked', false));
-    $('#btnBack').click(() => $('#filterModalOverlay').hide());
-
-    dataTable.on('draw', () => {
-        const count = dataTable.rows({search:'applied'}).count();
-        $('#totalCargasVisual').text("Total de Cargas: " + count);
+    table.on('draw', () => {
+        const total = table.rows({search:'applied'}).count();
+        $('#totalVisual').text("Cargas: " + total);
         updateChart();
     });
-    dataTable.draw();
+    table.draw();
 }});
 
 function updateChart() {
-    const counts = {};
-    const statusIdx = colunas.indexOf("STATUS");
-    dataTable.rows({search:'applied'}).data().each(r => {
-        counts[r[statusIdx]] = (counts[r[statusIdx]] || 0) + 1;
+    const data = {};
+    const sIdx = cols.indexOf("STATUS");
+    table.rows({search:'applied'}).data().each(r => {
+        const s = $(r[sIdx]).text();
+        data[s] = (data[s] || 0) + 1;
     });
-    if(myChart) myChart.destroy();
-    myChart = new Chart(document.getElementById('statusChart'), {
-        type: 'pie',
+    if(chart) chart.destroy();
+    chart = new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
         data: {
-            labels: Object.keys(counts).map(k => `${k} (${counts[k]})`),
-            datasets: [{ data: Object.values(counts), backgroundColor: Object.keys(counts).map(k => coresStatus[k] || '#888') }]
+            labels: Object.keys(data).map(k => `${k} (${data[k]})`),
+            datasets: [{ data: Object.values(data), backgroundColor: Object.keys(data).map(k => statusColors[k] || '#888'), borderWidth: 2 }]
         },
-        options: { responsive: true, maintainAspectRatio: false }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } } }
     });
 }
 
-// Exportações
-function exportarPDF() {
+function selAll(b) { $('#mBody input:not(:disabled)').prop('checked', b); }
+
+function applyM() {
+    const idx = $('#mMask').data('idx');
+    const vals = $('#mBody input:checked').map(function(){ return this.value; }).get();
+    localStorage.setItem('filter_'+idx, JSON.stringify(vals));
+    const reg = vals.map(v => '^'+$.fn.dataTable.util.escapeRegex(v)+'$').join('|');
+    table.column(idx).search(reg, true, false).draw();
+    
+    const btn = $(`.filter-btn[data-col="${cols[idx]}"]`);
+    vals.length > 0 ? btn.addClass('active').text('Ativo') : btn.removeClass('active').text('Filtrar');
+    $('#mMask').hide();
+}
+
+// PDF PROFISSIONAL
+function pdfPro() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('l', 'mm', 'a4');
-    doc.setFontSize(18);
-    doc.text("Relatório de Cargas - Fornecedor DESIGN", 14, 15);
-    doc.setFontSize(10);
-    doc.text(`Gerado em: ${new Date().toLocaleString()}`, 14, 22);
+    doc.setFillColor(30, 144, 255);
+    doc.rect(0, 0, 297, 20, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(16);
+    doc.text("RELATÓRIO PROFISSIONAL DE CARGAS - DESIGN", 15, 13);
     
     doc.autoTable({
         startY: 25,
-        head: [colunas],
-        body: dataTable.rows({search:'applied'}).data().toArray(),
-        theme: 'grid',
-        headStyles: { fillColor: [70, 130, 180] },
-        styles: { fontSize: 8 }
+        head: [cols],
+        body: table.rows({search:'applied'}).data().toArray().map(row => row.map(cell => $(cell).text())),
+        theme: 'striped',
+        headStyles: { fillColor: [70, 130, 180], fontSize: 9 },
+        styles: { fontSize: 8, halign: 'center' }
     });
-    doc.save("Cargas_Design.pdf");
+    doc.save("Relatorio_Design_Simonetti.pdf");
 }
 
-function exportarExcel() {
-    const ws = XLSX.utils.aoa_to_sheet([colunas, ...dataTable.rows({search:'applied'}).data().toArray()]);
+function excelPro() {
+    const data = table.rows({search:'applied'}).data().toArray().map(row => row.map(cell => $(cell).text()));
+    const ws = XLSX.utils.aoa_to_sheet([cols, ...data]);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Cargas");
     XLSX.writeFile(wb, "Cargas_Design.xlsx");
