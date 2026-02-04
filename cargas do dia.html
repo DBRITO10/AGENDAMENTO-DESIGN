@@ -23,63 +23,63 @@
         body { background-color: #F0F8FF; font-family: Arial, sans-serif; color: #000; padding: 10px; margin: 0; box-sizing: border-box; }
         h1 { margin-bottom: 16px; background-color: #1E90FF; padding: 10px; border-radius: 4px; font-size: 6vw; text-align: center; color: #fff; }
         @media (min-width: 768px) { h1 { font-size: 28px; } }
+        
+        /* Tabela e Células */
         table { width: 100%; font-size: 13px; border-collapse: collapse; }
         thead tr th { background: #4682B4; color: #fff; padding: 8px; text-align: center; font-weight: bold; border: 1px solid #CCC; }
         tbody tr:nth-child(even) { background-color: #E6F3FF; }
         tbody tr:nth-child(odd) { background-color: #FFFFFF; }
         td { padding: 8px 12px; border: 1px solid #CCC; white-space: nowrap; text-align: center; max-width: 150px; overflow: hidden; text-overflow: ellipsis; color: #000; }
         
-        /* Botão de filtro normal */
-        .filter-select { width: 100%; padding: 6px; font-size: 13px; background: #B0E0E6; border: 1px solid #CCC; border-radius: 4px; color: #000; text-align: center; cursor: pointer;}
-        .filter-select.applied { background-color: #FFD700; font-weight: bold; }
-        
-        /* Botão de fornecedor (desabilitado/fixo) */
-        .filter-fixed { width: 100%; padding: 6px; font-size: 13px; background: #d3d3d3; border: 1px solid #999; border-radius: 4px; color: #555; text-align: center; cursor: default; font-weight: bold; }
+        /* Botões de Filtro */
+        .filter-select { width: 100%; padding: 6px; font-size: 13px; background: #B0E0E6; border: 1px solid #CCC; border-radius: 4px; color: #000; text-align: center; cursor: pointer; font-weight: bold;}
+        .filter-select.applied { background-color: #FFD700; color: #000; }
+        .filter-fixed { width: 100%; padding: 6px; font-size: 13px; background: #555; border: 1px solid #333; border-radius: 4px; color: #fff; text-align: center; cursor: default; font-weight: bold; }
 
-        input.dataTables_filter input { color: #000 !important; background: #B0E0E6 !important; border-radius: 4px; border: 1px solid #CCC; padding: 4px 8px; font-size: 14px; }
-        table.dataTable th, table.dataTable td { min-width: 120px; text-align: center; }
+        /* Status Colorido */
         .status-cell { font-weight: bold; color: white !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
 
         /* Modais */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 20px; border-radius: 8px; max-height: 80%; overflow-y: auto; width: 90%; max-width: 400px; display: flex; flex-direction: column; }
-        .modal-checkbox-list { display: flex; flex-direction: column; overflow-y: auto; flex-grow: 1; margin-bottom: 15px; }
-        .modal-checkbox-list label { margin: 2px 0; display: flex; align-items: center; padding: 8px; border-radius: 4px; cursor: pointer; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; display: none; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 12px; max-height: 85%; overflow-y: auto; width: 90%; max-width: 450px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .modal-checkbox-list { display: flex; flex-direction: column; margin-top: 15px; }
+        .modal-checkbox-list label { margin: 2px 0; display: flex; align-items: center; padding: 10px; border-radius: 6px; cursor: pointer; border-bottom: 1px solid #eee; }
         .modal-checkbox-list label:hover:not(.disabled-option) { background-color: #f0f8ff; }
-        .disabled-option { color: #ccc; opacity: 0.6; cursor: not-allowed !important; }
+        .disabled-option { color: #bbb; opacity: 0.5; cursor: not-allowed !important; background-color: #f9f9f9; }
+        .disabled-option input { pointer-events: none; }
         
-        #modalButtons { display: flex; flex-wrap: wrap; gap: 5px; justify-content: space-between; position: sticky; top: 0; background: white; padding-bottom: 10px; border-bottom: 1px solid #ddd; margin-bottom: 10px; }
-        #modalButtons button { padding: 8px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: #fff; flex: 1; min-width: 80px; }
+        #modalButtons { display: flex; flex-wrap: wrap; gap: 8px; position: sticky; top: 0; background: white; padding-bottom: 15px; border-bottom: 2px solid #1E90FF; z-index: 10; }
+        #modalButtons button { padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: #fff; flex: 1; font-size: 12px; }
         #btnSelectAll { background-color: #007bff; }
         #btnSelectNone { background-color: #dc3545; }
         #btnApplyFilter { background-color: #28a745; }
         #btnCancel { background-color: #6c757d; }
 
-        #cargaModal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); }
-        .carga-modal-content { background-color: #fefefe; margin: 15% auto; padding: 20px; border-radius: 10px; width: 80%; max-width: 500px; position: relative; }
-        .close-button { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        #cargaModal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); }
+        .carga-modal-content { background-color: #fff; margin: 10% auto; padding: 25px; border-radius: 12px; width: 85%; max-width: 500px; position: relative; }
+        .close-button { color: #333; float: right; font-size: 30px; font-weight: bold; cursor: pointer; line-height: 20px; }
 
-        #btnShare { background:#1E90FF; color:#fff; padding:6px 12px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin-left:10px; }
-        #shareMenu { display:none; position:absolute; background:#fff; border:1px solid #ccc; border-radius:6px; z-index:3000; }
-        .share-option { padding:10px 14px; cursor:pointer; font-size:14px; background:#1E90FF; color:#fff; border-radius:4px; margin:4px; }
+        /* Barra de Busca e Compartilhamento */
+        .dataTables_wrapper .dataTables_filter { margin-bottom: 15px; float: none; text-align: left; }
+        #btnShare { background:#1E90FF; color:#fff; padding:8px 15px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin-top: 5px; }
     </style>
 </head>
 <body>
 
-<div id="userBar" style="background:#4682B4; padding:10px; display:flex; justify-content:space-between; align-items:center; border-radius:6px; margin-bottom:12px;">
+<div id="userBar" style="background:#4682B4; padding:12px; display:flex; justify-content:space-between; align-items:center; border-radius:6px; margin-bottom:12px;">
     <button onclick="history.back()" style="background: transparent; border: none; color: white; font-size: 24px; cursor: pointer;">←</button>
-    <span id="welcomeUser" style="font-weight:bold; color:#fff;"></span>
-    <button onclick="logout()" style="background:#4682B4; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">Sair</button>
+    <span id="welcomeUser" style="font-weight:bold; color:#fff; font-size: 14px;"></span>
+    <button onclick="logout()" style="background:rgba(255,255,255,0.2); color:white; border:none; padding:6px 15px; border-radius:6px; cursor:pointer; font-weight:bold;">Sair</button>
 </div>
 
 <h1>CARGAS DO DIA</h1>
 
-<div style="margin: 20px auto; max-width: 1000px; text-align: center;">
-    <div id="chartContainer" style="width: 100%; max-width: 600px; height: 350px; margin: 0 auto;">
+<div style="margin: 0 auto; max-width: 1000px; text-align: center;">
+    <div id="chartContainer" style="width: 100%; max-width: 400px; height: 300px; margin: 0 auto;">
         <canvas id="statusChart"></canvas>
     </div>
-    <div id="totalCargasVisual" style="font-size: 20px; font-weight: bold; color: #1E90FF; text-align: center; padding: 15px; border: 2px solid #1E90FF; border-radius: 8px; margin: 20px auto; width: 100%; max-width: 250px;">
-        Total de Cargas: 0
+    <div id="totalCargasVisual" style="font-size: 18px; font-weight: bold; color: #fff; background: #1E90FF; text-align: center; padding: 12px; border-radius: 8px; margin: 15px auto; width: 200px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        Total: 0
     </div>
 </div>
 
@@ -89,20 +89,17 @@
         <tr class="filters"></tr>
     </thead>
     <tbody></tbody>
-    <tfoot>
-        <tr><th id="totalCargas" style="text-align:right; font-weight:bold;">Total de Cargas: 0</th></tr>
-    </tfoot>
 </table>
 
 <div id="filterModalOverlay" class="modal-overlay">
     <div class="modal-content">
-        <div id="modalTitle" style="font-weight:bold; margin-bottom:10px;"></div>
         <div id="modalButtons">
             <button id="btnSelectAll">Todos</button>
-            <button id="btnSelectNone">Nenhum</button>
+            <button id="btnSelectNone">Limpar</button>
             <button id="btnCancel">Voltar</button>
-            <button id="btnApplyFilter">Aplicar</button>
+            <button id="btnApplyFilter">APLICAR</button>
         </div>
+        <div id="modalTitle" style="font-weight:bold; margin: 10px 0; color: #1E90FF; text-align: center; border-bottom: 1px solid #eee; padding-bottom: 5px;"></div>
         <div id="modalCheckboxList" class="modal-checkbox-list"></div>
     </div>
 </div>
@@ -110,8 +107,9 @@
 <div id="cargaModal">
     <div class="carga-modal-content">
         <span class="close-button">&times;</span>
-        <h3>Informação da Carga</h3>
-        <p id="cargaConteudo"></p>
+        <h3 style="color: #1E90FF; margin-top:0;">Produtos da Carga</h3>
+        <hr>
+        <p id="cargaConteudo" style="line-height: 1.6; font-size: 15px;"></p>
     </div>
 </div>
 
@@ -124,14 +122,13 @@ const coresStatus = { "CARGA RECEBIDA": '#4CAF50', "NO PATIO - FICOU P/ AMANHÃ"
 
 let dataTable;
 let myChart;
-let coresData = []; 
-let coresCentral = [];
 
-// Checagem de login
+// Segurança e Login
 if (localStorage.getItem("isLoggedIn") !== "true") window.location.href = "login.html";
 document.getElementById("welcomeUser").textContent = "Bem-vindo, " + (localStorage.getItem("username") || "Usuário");
 function logout(){ localStorage.clear(); window.location.href = "login.html"; }
 
+// Carregamento dos Dados
 Papa.parse(csvUrl, { download: true, header: true, complete: function (results) {
     let data = results.data;
     const fornecedorIdx = colunasDesejadas.indexOf("FORNECEDOR");
@@ -139,10 +136,10 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function (results) 
     const dataIdx = colunasDesejadas.indexOf("DATA");
     const centralIdx = colunasDesejadas.indexOf("CENTRAL");
 
-    // FILTRO FIXO DESIGN E TRATAMENTO "SEM INF"
+    // 1. FILTRO FIXO DESIGN (Apenas dados DESIGN entram no site)
     data = data.filter(row => {
-        const fValue = (row["FORNECEDOR"] || "").trim().toUpperCase();
-        return fValue === "DESIGN";
+        const val = (row["FORNECEDOR"] || "").trim().toUpperCase();
+        return val === "DESIGN";
     });
 
     const headerRow = document.querySelector("#planilha thead tr.headers");
@@ -152,25 +149,27 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function (results) 
     colunasDesejadas.forEach(col => {
         headerRow.innerHTML += `<th>${col}</th>`;
         if(col === "FORNECEDOR") {
-            filterRow.innerHTML += `<th><button class="filter-fixed">FIXO: DESIGN</button></th>`;
+            filterRow.innerHTML += `<th><button class="filter-fixed">DESIGN</button></th>`;
         } else {
             filterRow.innerHTML += `<th><button class="filter-select" data-column-name="${col}">Filtrar</button></th>`;
         }
     });
 
-    data.forEach((row, rowIndex) => {
+    data.forEach((row) => {
         let rowHtml = "<tr>";
         colunasDesejadas.forEach((col, index) => {
             let valor = (row[col] || "").trim();
-            if(valor === "") valor = "SEM INF"; // Requisito: se vazio, SEM INF
+            
+            // 2. TRATAMENTO SEM INF (Se vazio, coloca SEM INF)
+            if(valor === "") valor = "SEM INF";
 
             let style = "";
+            // Cores de Status
             if (index === statusIdx) {
                 style = `class="status-cell" style="background-color: ${coresStatus[valor] || '#4682B4'};"`;
-            } else if (index === dataIdx && valor.startsWith('*')) {
-                valor = valor.replace(/\*/g, '');
-                style = 'style="color: red; font-weight: bold;"';
-            } else if (index === centralIdx && valor.startsWith('*')) {
+            } 
+            // Destaque Vermelho com asterisco
+            else if ((index === dataIdx || index === centralIdx) && valor.startsWith('*')) {
                 valor = valor.replace(/\*/g, '');
                 style = 'style="color: red; font-weight: bold;"';
             }
@@ -180,91 +179,113 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function (results) 
         tableBody.innerHTML += rowHtml;
     });
 
+    // Inicialização DataTable
     dataTable = $("#planilha").DataTable({
         paging:false, scrollX:true, info:false, order: [[0, 'desc']],
+        language: { search: "Buscar na Tabela:" },
         columnDefs: [{
             targets: colunasDesejadas.indexOf("TIPO DE PRODUTO"),
             createdCell: function (td, cellData) {
                 const val = cellData.toUpperCase();
-                if (['ARMARIO', 'COMODA', 'COZINHA', 'ROUPEIRO'].some(i => val.includes(i))) $(td).css('background-color', '#FFFF00');
-                else if (['CELULAR', 'TABLET'].some(i => val.includes(i))) $(td).css('background-color', '#00BFFF');
+                if (['ARMARIO', 'COMODA', 'COZINHA', 'ROUPEIRO', 'PAINEL'].some(i => val.includes(i))) $(td).css('background-color', '#FFFF00');
+                else if (['CELULAR', 'NOTEBOOK', 'TABLET'].some(i => val.includes(i))) $(td).css('background-color', '#00BFFF');
             }
         }]
     });
 
-    // EFEITO CASCATA NO MODAL
+    // 3. LÓGICA DO MODAL COM EFEITO CASCATA INTELIGENTE
     $(document).on('click', '.filter-select', function() {
         const colIndex = $(this).closest('th').index();
         const colName = colunasDesejadas[colIndex];
         
-        // Valores únicos totais (para que o usuário veja tudo o que existe no DESIGN)
-        const allValues = dataTable.column(colIndex, {filter: 'none'}).data().unique().sort().toArray();
+        // Todos os valores que existem no universo DESIGN para esta coluna
+        const allPossibleInDesign = dataTable.column(colIndex, {filter: 'none'}).data().unique().sort().toArray();
         
-        // Valores que seriam possíveis com os filtros das OUTRAS colunas
-        const oldSearch = dataTable.column(colIndex).search();
-        dataTable.column(colIndex).search('').draw();
-        const possibleValues = dataTable.column(colIndex, {filter: 'applied'}).data().unique().toArray();
-        dataTable.column(colIndex).search(oldSearch).draw();
+        // Valores que são válidos com base nos outros filtros já aplicados
+        const currentSearch = dataTable.column(colIndex).search();
+        dataTable.column(colIndex).search('').draw(); // Limpa temporariamente este filtro para ver as opções
+        const validNow = dataTable.column(colIndex, {filter: 'applied'}).data().unique().toArray();
+        dataTable.column(colIndex).search(currentSearch).draw(); // Restaura
 
-        const saved = JSON.parse(localStorage.getItem(`f_${colIndex}`) || "[]");
+        const savedFilters = JSON.parse(localStorage.getItem(`filter_${colIndex}`) || "[]");
         
         let html = '';
-        allValues.forEach(v => {
-            const isChecked = saved.includes(v) ? 'checked' : '';
-            const isPossible = possibleValues.includes(v);
-            const disabledClass = (!isPossible && !saved.includes(v)) ? 'disabled-option' : '';
-            const disabledAttr = (!isPossible && !saved.includes(v)) ? 'disabled' : '';
+        allPossibleInDesign.forEach(val => {
+            const isChecked = savedFilters.includes(val) ? 'checked' : '';
+            const isValid = validNow.includes(val);
+            
+            // Se não é válido na seleção atual e não está marcado, ele fica cinza/bloqueado
+            const isDisabled = (!isValid && !savedFilters.includes(val));
+            const itemClass = isDisabled ? 'disabled-option' : '';
+            const itemAttr = isDisabled ? 'disabled' : '';
 
-            html += `<label class="${disabledClass}">
-                <input type="checkbox" value="${v}" ${isChecked} ${disabledAttr}> ${v}
+            html += `<label class="${itemClass}">
+                <input type="checkbox" value="${val}" ${isChecked} ${itemAttr}> ${val}
             </label>`;
         });
 
         $('#modalTitle').text("Filtrar: " + colName);
         $('#modalCheckboxList').html(html);
-        $('#filterModalOverlay').data('col', colIndex).show();
+        $('#filterModalOverlay').data('col-index', colIndex).fadeIn(200).css('display', 'flex');
     });
 
+    // Botão Aplicar Filtro
     $('#btnApplyFilter').click(function() {
-        const idx = $('#filterModalOverlay').data('col');
-        const vals = $('#modalCheckboxList input:checked').map(function() { return this.value; }).get();
-        localStorage.setItem(`f_${idx}`, JSON.stringify(vals));
+        const idx = $('#filterModalOverlay').data('col-index');
+        const selected = $('#modalCheckboxList input:checked').map(function() { return this.value; }).get();
         
-        const search = vals.map(v => '^' + $.fn.dataTable.util.escapeRegex(v) + '$').join('|');
-        dataTable.column(idx).search(search, true, false).draw();
+        localStorage.setItem(`filter_${idx}`, JSON.stringify(selected));
         
-        const btn = $(`.filter-select:eq(${idx > fornecedorIdx ? idx-1 : idx})`); 
-        vals.length > 0 ? btn.addClass('applied').text('Aplicado') : btn.removeClass('applied').text('Filtrar');
+        const regex = selected.map(v => '^' + $.fn.dataTable.util.escapeRegex(v) + '$').join('|');
+        dataTable.column(idx).search(regex, true, false).draw();
+        
+        // Estiliza o botão na tabela se estiver aplicado
+        const btn = $(`.filters th:eq(${idx}) .filter-select`);
+        if(selected.length > 0) {
+            btn.addClass('applied').text('Filtro Ativo');
+        } else {
+            btn.removeClass('applied').text('Filtrar');
+        }
         
         $('#filterModalOverlay').hide();
     });
 
-    // Funções de apoio e Totalizadores
+    // Gráfico e Contadores
     dataTable.on('draw', () => {
         const total = dataTable.rows({search:'applied'}).count();
-        $('#totalCargas, #totalCargasVisual').text("Total de Cargas: " + total);
-        renderizarGrafico(dataTable.rows({search:'applied'}).data().toArray());
-    });
-
-    $('.close-button').click(() => $('#cargaModal').hide());
-    $('#btnCancel').click(() => $('#filterModalOverlay').hide());
-    $('#btnSelectNone').click(() => $('#modalCheckboxList input').prop('checked', false));
-    
-    // Gráfico Pie
-    function renderizarGrafico(rows) {
-        const counts = {};
-        rows.forEach(r => { const s = r[statusIdx]; counts[s] = (counts[s] || 0) + 1; });
-        const labels = Object.keys(counts);
+        $('#totalCargasVisual').text("Total: " + total);
+        
+        // Atualiza Gráfico
+        const statusMap = {};
+        dataTable.rows({search:'applied'}).data().each(row => {
+            const s = row[statusIdx];
+            statusMap[s] = (statusMap[s] || 0) + 1;
+        });
+        
         if (myChart) myChart.destroy();
         myChart = new Chart(document.getElementById('statusChart'), {
             type: 'pie',
             data: {
-                labels: labels.map(l => `${l} (${counts[l]})`),
-                datasets: [{ data: Object.values(counts), backgroundColor: labels.map(l => coresStatus[l] || '#808080') }]
+                labels: Object.keys(statusMap).map(k => `${k} (${statusMap[k]})`),
+                datasets: [{ data: Object.values(statusMap), backgroundColor: Object.keys(statusMap).map(k => coresStatus[k] || '#808080') }]
             },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } } }
         });
-    }
+    });
+
+    // Clique na Carga para ver detalhe
+    $('#planilha tbody').on('click', 'td:nth-child(' + (colunasDesejadas.indexOf("CARGAS") + 1) + ')', function() {
+        const txt = dataTable.cell(this).data();
+        $('#cargaConteudo').html(txt.replace(/,/g, '<br>• '));
+        $('#cargaModal').fadeIn(200);
+    });
+
+    $('.close-button, #btnCancel').click(() => { $('.modal-overlay, #cargaModal').hide(); });
+    $('#btnSelectAll').click(() => $('#modalCheckboxList input:not(:disabled)').prop('checked', true));
+    $('#btnSelectNone').click(() => $('#modalCheckboxList input').prop('checked', false));
+
+    // Forçar primeiro desenho do gráfico
+    dataTable.draw();
 }});
 </script>
 </body>
