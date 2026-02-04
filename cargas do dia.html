@@ -20,58 +20,49 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css">
 
     <style>
-        /* Reset e Preenchimento Total */
         * { box-sizing: border-box; }
-        body { background-color: #F0F8FF; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 10px; width: 100vw; overflow-x: hidden; }
+        body { background-color: #F0F8FF; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; width: 100vw; }
         
-        /* Barra de Usuário */
-        #userBar { background:#1E90FF; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; border-radius:8px; margin-bottom:10px; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.15); width: 100%; }
+        #userBar { background:#1E90FF; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; border-radius:8px; margin-bottom:10px; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
         #welcomeContainer { display: flex; align-items: center; gap: 15px; }
         #welcomeUser { font-weight: bold; font-size: 16px; }
 
         h1 { background: white; color: #1E90FF; padding: 12px; border-radius: 8px; font-size: 22px; text-align: center; margin: 10px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
-        /* Gráfico Topzera no Topo */
         #topArea { display: flex; flex-direction: column; align-items: center; width: 100%; margin-bottom: 20px; }
         #chartWrapper { width: 100%; max-width: 450px; height: 320px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
         #totalVisual { background: #1E90FF; color: white; padding: 10px 25px; border-radius: 30px; font-weight: bold; font-size: 18px; margin-top: -15px; z-index: 2; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
 
-        /* Exportação */
         .export-row { display: flex; gap: 10px; justify-content: center; margin: 15px 0; width: 100%; }
         .btn-export { border: none; padding: 10px 20px; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; }
         .btn-pdf { background: #d32f2f; }
         .btn-excel { background: #2e7d32; }
 
-        /* Container da Tabela - Preenchimento Máximo no PC */
-        .main-container { width: 100%; max-width: 100%; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .main-container { width: 100%; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         
         table.dataTable { width: 100% !important; margin: 0 !important; }
-        thead th { background-color: #4682B4 !important; color: white !important; font-size: 13px; text-transform: uppercase; border: 1px solid #36648B !important; }
+        thead th { background-color: #4682B4 !important; color: white !important; font-size: 13px; text-transform: uppercase; border: 1px solid #36648B !important; padding: 10px !important; }
         
-        /* Estilo dos Filtros nas Colunas */
-        .filter-btn { width: 95%; margin-top: 5px; padding: 4px; font-size: 11px; border-radius: 4px; border: 1px solid #ccc; cursor: pointer; font-weight: bold; background: #f9f9f9; }
+        .filter-btn { width: 95%; margin-top: 5px; padding: 6px; font-size: 11px; border-radius: 4px; border: 1px solid #ccc; cursor: pointer; font-weight: bold; background: #f9f9f9; }
         .filter-btn.active { background: #FFD700; border-color: #DAA520; color: #000; }
         .filter-fixed { background: #333; color: #fff; cursor: default; border: none; }
 
-        /* Células e Status */
-        td { font-size: 13px; padding: 10px !important; text-align: center !important; }
-        .status-pill { font-weight: bold; color: white !important; border-radius: 4px; padding: 4px 8px; display: inline-block; width: 100%; text-shadow: 1px 1px 1px rgba(0,0,0,0.2); }
+        td { font-size: 13px; padding: 12px !important; text-align: center !important; border: 1px solid #eee !important; }
+        .status-pill { font-weight: bold; color: white !important; border-radius: 4px; padding: 6px; display: inline-block; width: 100%; text-shadow: 1px 1px 1px rgba(0,0,0,0.2); }
 
-        /* Modal */
         .modal-mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: none; justify-content: center; align-items: center; }
         .modal-box { background: white; width: 90%; max-width: 400px; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; max-height: 85vh; }
-        .modal-header { background: #1E90FF; color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; position: sticky; top: 0; }
+        .modal-header { background: #1E90FF; color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; }
         .modal-body { padding: 10px; overflow-y: auto; flex-grow: 1; }
         .modal-footer { padding: 15px; background: #f1f1f1; display: flex; gap: 8px; }
         .modal-footer button { flex: 1; padding: 10px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; }
         
-        label.opt { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #eee; transition: 0.2s; cursor: pointer; }
-        label.opt:hover { background: #e3f2fd; }
+        label.opt { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; }
         label.opt.locked { opacity: 0.4; background: #f5f5f5; cursor: not-allowed; }
 
         @media (max-width: 768px) {
             #chartWrapper { height: 280px; }
-            .btn-export { flex: 1; font-size: 12px; padding: 10px 5px; }
+            .btn-export { flex: 1; font-size: 11px; }
         }
     </style>
 </head>
@@ -165,22 +156,41 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function(res) {
         tbody.innerHTML += rowHtml + "</tr>";
     });
 
-    table = $("#planilha").DataTable({ paging: false, scrollX: true, info: false, order: [[0, 'desc']] });
+    table = $("#planilha").DataTable({ 
+        paging: false, 
+        scrollX: true, 
+        info: false, 
+        order: [[0, 'desc']],
+        language: { search: "Buscar na Tabela:" } // Corrigido para Português
+    });
 
-    // Cascata
+    // Restaurar filtros salvos ao carregar
+    cols.forEach((c, i) => {
+        const saved = JSON.parse(localStorage.getItem('filter_'+i) || "[]");
+        if(saved.length > 0) {
+            const reg = saved.map(v => '^'+$.fn.dataTable.util.escapeRegex(v)+'$').join('|');
+            table.column(i).search(reg, true, false);
+            $(`.filter-btn[data-col="${c}"]`).addClass('active').text('Ativo');
+        }
+    });
+    table.draw();
+
+    // Lógica do Modal Corrigida
     $(document).on('click', '.filter-btn:not(.filter-fixed)', function() {
         const idx = $(this).closest('th').index();
-        const colName = cols[idx];
-        const all = table.column(idx, {filter:'none'}).data().unique().sort().toArray();
+        
+        // Pega os dados puros (sem HTML) para não dar erro no filtro
+        const all = table.column(idx, {filter:'none'}).nodes().map(node => $(node).text().trim()).unique().sort().toArray();
         
         const curr = table.column(idx).search();
         table.column(idx).search('').draw();
-        const validNow = table.column(idx, {filter:'applied'}).data().unique().toArray();
+        const validNow = table.column(idx, {filter:'applied'}).nodes().map(node => $(node).text().trim()).unique().toArray();
         table.column(idx).search(curr).draw();
 
         const saved = JSON.parse(localStorage.getItem('filter_'+idx) || "[]");
         let h = '';
         all.forEach(v => {
+            if(v === "") return;
             const isSel = saved.includes(v) ? 'checked' : '';
             const isOk = validNow.includes(v);
             const lock = (!isOk && !saved.includes(v));
@@ -188,7 +198,7 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function(res) {
                 <input type="checkbox" value="${v}" ${isSel} ${lock ? 'disabled' : ''}> <span style="margin-left:8px">${v}</span>
             </label>`;
         });
-        $('#mTitle').text(colName);
+        $('#mTitle').text(cols[idx]);
         $('#mBody').html(h);
         $('#mMask').data('idx', idx).fadeIn(200).css('display','flex');
     });
@@ -198,14 +208,14 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function(res) {
         $('#totalVisual').text("Cargas: " + total);
         updateChart();
     });
-    table.draw();
+    updateChart();
 }});
 
 function updateChart() {
     const data = {};
     const sIdx = cols.indexOf("STATUS");
-    table.rows({search:'applied'}).data().each(r => {
-        const s = $(r[sIdx]).text();
+    table.rows({search:'applied'}).nodes().each(node => {
+        const s = $(node).find('td').eq(sIdx).text().trim();
         data[s] = (data[s] || 0) + 1;
     });
     if(chart) chart.destroy();
@@ -215,7 +225,7 @@ function updateChart() {
             labels: Object.keys(data).map(k => `${k} (${data[k]})`),
             datasets: [{ data: Object.values(data), backgroundColor: Object.keys(data).map(k => statusColors[k] || '#888'), borderWidth: 2 }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } } }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
     });
 }
 
@@ -233,7 +243,6 @@ function applyM() {
     $('#mMask').hide();
 }
 
-// PDF PROFISSIONAL
 function pdfPro() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('l', 'mm', 'a4');
@@ -241,22 +250,28 @@ function pdfPro() {
     doc.rect(0, 0, 297, 20, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(16);
-    doc.text("RELATÓRIO PROFISSIONAL DE CARGAS - DESIGN", 15, 13);
+    doc.text("RELATÓRIO DE CARGAS - DESIGN", 15, 13);
     
+    const rows = table.rows({search:'applied'}).nodes().map(node => {
+        return $(node).find('td').map(function() { return $(this).text().trim(); }).get();
+    }).toArray();
+
     doc.autoTable({
         startY: 25,
         head: [cols],
-        body: table.rows({search:'applied'}).data().toArray().map(row => row.map(cell => $(cell).text())),
+        body: rows,
         theme: 'striped',
         headStyles: { fillColor: [70, 130, 180], fontSize: 9 },
         styles: { fontSize: 8, halign: 'center' }
     });
-    doc.save("Relatorio_Design_Simonetti.pdf");
+    doc.save("Relatorio_Design.pdf");
 }
 
 function excelPro() {
-    const data = table.rows({search:'applied'}).data().toArray().map(row => row.map(cell => $(cell).text()));
-    const ws = XLSX.utils.aoa_to_sheet([cols, ...data]);
+    const rows = table.rows({search:'applied'}).nodes().map(node => {
+        return $(node).find('td').map(function() { return $(this).text().trim(); }).get();
+    }).toArray();
+    const ws = XLSX.utils.aoa_to_sheet([cols, ...rows]);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Cargas");
     XLSX.writeFile(wb, "Cargas_Design.xlsx");
