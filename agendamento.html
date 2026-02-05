@@ -131,7 +131,9 @@ async function carregar() {
     let p = 0;
     urls.forEach(url => {
         Papa.parse(url, { download:true, header:true, complete: r => {
-            allData = allData.concat(r.data.filter(x => x[colunas[0]]));
+            // FILTRO FIXO: Só aceita dados onde o Fornecedor é exatamente DESIGN
+            const filteredRows = r.data.filter(x => x[colunas[0]] && (x["FORNECEDOR"] || "").trim().toUpperCase() === "DESIGN");
+            allData = allData.concat(filteredRows);
             p++; if(p === urls.length) initTable();
         }});
     });
@@ -150,7 +152,7 @@ function initTable() {
     dataTable = $("#planilha").DataTable({
         data: allData,
         columns: colunas.map(c => ({ data: c })),
-        stateSave: true,
+        stateSave: false, // Desativado para garantir que o filtro DESIGN sempre prevaleça ao atualizar
         language: { url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/pt-BR.json" },
         scrollX: true, autoWidth: true, pageLength: 50,
         order: [[1, 'asc']],
@@ -159,19 +161,8 @@ function initTable() {
             if (['ROUPEIRO', 'ARMARIO', 'COZINHA', 'COMODA'].some(x => tp.includes(x))) $('td', row).eq(5).css('background','#FFFF00');
             else if (['CELULAR', 'TABLET', 'NOTEBOOK'].some(x => tp.includes(x))) $('td', row).eq(5).css('background','#00BFFF');
             else if (tp.includes('MESA')) $('td', row).eq(5).css('background','#4CAF50');
-        },
-        initComplete: function() {
-            this.api().columns().every(function(idx) {
-                if (this.search()) {
-                    $(`.filter-select[data-index="${idx}"]`).addClass('applied');
-                }
-            });
         }
     });
-
-    // Filtro automático por DESIGN aplicado aqui
-    dataTable.column(4).search('^' + $.fn.dataTable.util.escapeRegex('DESIGN') + '$', true, false).draw();
-    $(`.filter-select[data-index="4"]`).addClass('applied');
 
     $(document).off('click', '.filter-select').on('click', '.filter-select', function() {
         abrirFiltro($(this).data('index'));
