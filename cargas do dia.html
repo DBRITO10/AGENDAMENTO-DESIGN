@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8" />
-    <title>CARGAS DO DIA</title>
+    <title>CARGAS DO DIA - DESIGN</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1E90FF">
@@ -67,22 +67,12 @@
         #shareMenu { display:none; position:absolute; background:#fff; border:1px solid #ccc; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,0.2); z-index:3000; }
         #shareMenu .share-option { padding:10px 14px; cursor:pointer; font-size:14px; background:#1E90FF; color:#fff; border-radius:4px; margin:4px; text-align:center; }
         #shareMenu .share-option:hover { background:#104E8B; }
-        #notaOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; }
-        #notaPopup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; color: #000; border-radius: 10px; padding: 20px; max-width: 90%; max-height: 70%; overflow-y: auto; z-index: 2100; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        #notaPopup h2 { margin-top: 0; color: #1E90FF; }
-        #notaPopup button { margin-top: 12px; padding: 6px 14px; border: none; background: #1E90FF; color: #fff; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        #notaPopup button:hover { background: #104E8B; }
         
         .status-cell {
             font-weight: bold;
             color: white !important;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
-        .status-em-atraso { background-color: #F44336; }
-        .status-carga-recebida { background-color: #4CAF50; }
-        .status-em-recebimento { background-color: #FFC107; }
-        .status-no-patio { background-color: #03A9F4; }
-        .status-reagenda { background-color: #9C27B0; }
 
         .modal-overlay {
             position: fixed;
@@ -115,7 +105,25 @@
             flex-grow: 1;
         }
         .modal-checkbox-list label {
-            margin: 5px 0;
+            margin: 2px 0;
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        .modal-checkbox-list label:hover:not(.disabled-option) {
+            background-color: #f0f8ff;
+        }
+        .modal-checkbox-list input {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+        .disabled-option {
+            color: #ccc;
+            opacity: 0.6;
+            cursor: not-allowed !important;
         }
         .modal-title {
             font-size: 1.2em;
@@ -145,25 +153,11 @@
             flex-grow: 1;
             margin: 0 5px;
         }
-        #btnSelectAll {
-            background-color: #007bff;
-        }
-        #btnSelectNone {
-            background-color: #dc3545;
-        }
-        #btnApplyFilter {
-            background-color: #28a745;
-        }
-        /* Cor do Novo Botão Cancelar */
-        #btnCancel {
-            background-color: #6c757d; 
-        }
+        #btnSelectAll { background-color: #007bff; }
+        #btnSelectNone { background-color: #dc3545; }
+        #btnApplyFilter { background-color: #28a745; }
+        #btnCancel { background-color: #6c757d; }
 
-        /* Removido o CSS de sombreado, pois o modal agora só lista opções disponíveis */
-        /* .disabled-option {} */
-        /* .disabled-option input[type="checkbox"] {} */
-
-        /* Novo CSS para o modal de cargas */
         #cargaModal {
             display: none;
             position: fixed;
@@ -203,12 +197,6 @@
             right: 15px;
             cursor: pointer;
         }
-        .close-button:hover,
-        .close-button:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
@@ -217,33 +205,10 @@
         window.location.href = "login.html";
     }
 </script>
-<div id="userBar" style="
-    background:#4682B4; 
-    padding:10px; 
-    display:flex; 
-    justify-content:space-between; 
-    align-items:center; 
-    border-radius:6px; 
-    margin-bottom:12px;
-">
-    <button onclick="history.back()" style="
-        background: transparent; 
-        border: none; 
-        color: white; 
-        font-size: 24px; 
-        cursor: pointer;
-        margin-right: 10px;
-    ">←</button>
+<div id="userBar" style="background:#4682B4; padding:10px; display:flex; justify-content:space-between; align-items:center; border-radius:6px; margin-bottom:12px;">
+    <button onclick="history.back()" style="background: transparent; border: none; color: white; font-size: 24px; cursor: pointer; margin-right: 10px;">←</button>
     <span id="welcomeUser" style="font-weight:bold; color:#fff; flex-grow: 1;"></span>
-    <button onclick="logout()" style="
-        background:#4682B4;
-        color:white;
-        border:none;
-        padding:6px 12px;
-        border-radius:6px;
-        cursor:pointer;
-        font-weight:bold;
-    ">Sair</button>
+    <button onclick="logout()" style="background:#4682B4; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">Sair</button>
 </div>
 <script>
     const username = localStorage.getItem("username") || "Usuário";
@@ -261,30 +226,14 @@
 <h1>CARGAS DO DIA</h1>
 
 <div style="margin: 20px auto; max-width: 1000px; text-align: center;">
-    
     <div id="chartContainer" style="width: 100%; max-width: 600px; height: 350px; padding: 10px; margin: 0 auto;">
         <canvas id="statusChart"></canvas>
     </div>
-    
-    <div id="totalCargasVisual" style="
-        font-size: 20px; 
-        font-weight: bold; 
-        color: #1E90FF; 
-        text-align: center; 
-        padding: 15px; 
-        border: 2px solid #1E90FF; 
-        border-radius: 8px; 
-        margin-top: 20px; 
-        margin-left: auto;
-        margin-right: auto;
-        width: 100%; 
-        max-width: 250px; 
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    ">
+    <div id="totalCargasVisual" style="font-size: 20px; font-weight: bold; color: #1E90FF; text-align: center; padding: 15px; border: 2px solid #1E90FF; border-radius: 8px; margin-top: 20px; margin-left: auto; margin-right: auto; width: 100%; max-width: 250px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
         Total de Cargas: 0
     </div>
-
 </div>
+
 <table id="planilha" class="display nowrap">
     <thead>
         <tr class="headers"></tr>
@@ -303,16 +252,10 @@
         <div id="modalButtons">
             <button id="btnSelectAll">Marcar Todos</button>
             <button id="btnSelectNone">Desmarcar Todos</button>
-            <button id="btnCancel">Cancelar</button> <button id="btnApplyFilter">Aplicar Filtro</button>
+            <button id="btnCancel">Cancelar</button> 
+            <button id="btnApplyFilter">Aplicar Filtro</button>
         </div>
     </div>
-</div>
-
-<div id="notaOverlay"></div>
-<div id="notaPopup">
-    <h2>Detalhes</h2>
-    <div id="notaConteudo"></div>
-    <button id="fecharPopup">Fechar</button>
 </div>
 
 <div id="cargaModal">
@@ -322,6 +265,7 @@
         <p id="cargaConteudo"></p>
     </div>
 </div>
+
 <script>
 const sheetID = "1Ore02M4GARvE6hldNDZmiVNDrABb4dgaZO7wlMY-fjs";
 const gid = "2090543957";
@@ -329,7 +273,6 @@ const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetID}/export?format=
 const colunasDesejadas = ["ORDEM DE AGENDA","DATA","CENTRAL","CARGAS","STATUS","FORNECEDOR","TIPO DE PRODUTO", "BOX"];
 const coresStatus = {
     "CARGA RECEBIDA": '#4CAF50',
-    // Cor escura para melhor visibilidade do texto branco.
     "NO PATIO - FICOU P/ AMANHÃ": '#3ACFB9', 
     "CANCELADA": '#7a002b',    
     "SOB AJUSTE": '#8B27F5',
@@ -341,18 +284,6 @@ const coresStatus = {
     "REAGENDA": '#9B591B'
 };
 
-// --- CÓDIGO PARA PRÉ-FILTRAR APENAS O FORNECEDOR "DESIGN" (mantido) ---
-// 1. Define o índice da coluna FORNECEDOR (coluna 6, índice 5, contando de 0)
-const fornecedorColumnIndex = 5; 
-
-// 2. Valor exato do fornecedor que queremos (DEVE SER CASE-SENSITIVE)
-const fornecedorAlvo = "DESIGN"; 
-
-// 3. Salva o filtro no localStorage para que seja aplicado no load da tabela
-const filtroDesignJSON = JSON.stringify([fornecedorAlvo]);
-localStorage.setItem(`filtroColuna${fornecedorColumnIndex}`, filtroDesignJSON);
-// --- FIM DO CÓDIGO DE PRÉ-FILTRO ---
-
 let myChart;
 let dataTable;
 let coresData = []; 
@@ -361,48 +292,28 @@ let coresCentral = [];
 function renderizarGrafico(data) {
     const statusCounts = {};
     const statusIndex = colunasDesejadas.indexOf("STATUS");
-    
     data.forEach(row => {
         const status = row[statusIndex];
-        if (status) {
-            statusCounts[status] = (statusCounts[status] || 0) + 1;
-        }
+        if (status) { statusCounts[status] = (statusCounts[status] || 0) + 1; }
     });
-
     const labels = Object.keys(statusCounts);
     const chartData = Object.values(statusCounts);
     const backgroundColors = labels.map(label => coresStatus[label] || '#808080');
-
-    // Define a posição da legenda: 'right' para telas grandes, 'bottom' para telas pequenas (celular).
-    const isMobile = window.innerWidth < 768; 
+    const isMobile = window.innerWidth < 768;
     const legendPosition = isMobile ? 'bottom' : 'right';
-
-    if (myChart) {
-        myChart.destroy();
-    }
-    
-    // Adiciona a contagem de cargas aos rótulos da legenda
+    if (myChart) { myChart.destroy(); }
     const countedLabels = labels.map(label => `${label} (${statusCounts[label]})`);
-
     const ctx = document.getElementById('statusChart').getContext('2d');
     myChart = new Chart(ctx, {
         type: 'pie',
         data: {
-            // Usa os rótulos com contagem na legenda
             labels: countedLabels, 
-            datasets: [{
-                data: chartData,
-                backgroundColor: backgroundColors,
-                hoverOffset: 4
-            }]
+            datasets: [{ data: chartData, backgroundColor: backgroundColors, hoverOffset: 4 }]
         },
         options: {
             responsive: true,
             plugins: {
-                legend: {
-                    position: legendPosition, 
-                    align: 'center', 
-                },
+                legend: { position: legendPosition, align: 'center' },
                 tooltip: {
                     callbacks: {
                         label: function(tooltipItem) {
@@ -420,35 +331,35 @@ function renderizarGrafico(data) {
 }
 
 Papa.parse(csvUrl, { download: true, header: true, complete: function (results) {
-    const data = results.data;
-    if(!data.length || Object.keys(data[0]).length===0){ alert("Falha ao carregar dados."); return; }
+    // FILTRO FIXO: Só aceita linhas onde o Fornecedor é DESIGN
+    let data = results.data.filter(row => {
+        const fornecedor = (row["FORNECEDOR"] || "").trim().toUpperCase();
+        return fornecedor === "DESIGN";
+    });
 
+    if(!data.length){ alert("Nenhum registro para o fornecedor DESIGN foi encontrado."); return; }
+    
     results.meta.fields = results.meta.fields.map(f=>f.trim());
     data.forEach(row=>{ Object.keys(row).forEach(k=>{ if(k!==k.trim()){ row[k.trim()]=row[k]; delete row[k]; } }); });
     data.forEach(row=>{ colunasDesejadas.forEach(col=>{ if(row[col]) row[col]=row[col].trim(); }); });
 
-    // Pré-processamento dos dados para a coluna "DATA"
     const dataIndex = colunasDesejadas.indexOf("DATA");
     data.forEach((row, rowIndex) => {
         const dataOriginal = row["DATA"] || "";
-        const deveSerVermelho = dataOriginal.startsWith('*') && dataOriginal.endsWith('*'); 
-        if (deveSerVermelho) {
+        if (dataOriginal.startsWith('*') && dataOriginal.endsWith('*')) {
             row["DATA"] = dataOriginal.substring(1, dataOriginal.length - 1); 
+            coresData[rowIndex] = 'red';
         }
-        coresData[rowIndex] = deveSerVermelho ? 'red' : ''; 
     });
     
-    // Pré-processamento dos dados para a coluna "CENTRAL"
     const centralIndex = colunasDesejadas.indexOf("CENTRAL");
     data.forEach((row, rowIndex) => {
         const centralOriginal = row["CENTRAL"] || "";
-        const deveSerVermelhoCentral = centralOriginal.startsWith('*') && centralOriginal.endsWith('*'); 
-        if (deveSerVermelhoCentral) {
+        if (centralOriginal.startsWith('*') && centralOriginal.endsWith('*')) {
             row["CENTRAL"] = centralOriginal.substring(1, centralOriginal.length - 1); 
+            coresCentral[rowIndex] = 'red';
         }
-        coresCentral[rowIndex] = deveSerVermelhoCentral ? 'red' : ''; 
     });
-
 
     const headerRow = document.querySelector("#planilha thead tr.headers");
     const filterRow = document.querySelector("#planilha thead tr.filters");
@@ -462,7 +373,6 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function (results) 
     
     document.querySelector("#planilha tfoot th").setAttribute("colspan", colunasDesejadas.length);
 
-    // Renderização da tabela com estilos de cor
     data.forEach((row, rowIndex) => {
         let rowHtml = "<tr>";
         colunasDesejadas.forEach((col, index) => {
@@ -470,11 +380,9 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function (results) 
             let cellHtml = `<td>${valor}</td>`;
             if (index === statusIndex) {
                 cellHtml = `<td class="status-cell" style="background-color: ${coresStatus[valor] || '#4682B4'};">${valor}</td>`;
-            } 
-            else if (index === dataIndex && coresData[rowIndex] === 'red') {
+            } else if (index === dataIndex && coresData[rowIndex] === 'red') {
                  cellHtml = `<td style="color: red; font-weight: bold;">${valor}</td>`;
-            }
-            else if (index === centralIndex && coresCentral[rowIndex] === 'red') {
+            } else if (index === centralIndex && coresCentral[rowIndex] === 'red') {
                  cellHtml = `<td style="color: red; font-weight: bold;">${valor}</td>`;
             }
             rowHtml += cellHtml;
@@ -486,40 +394,29 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function (results) 
     dataTable = $("#planilha").DataTable({
         paging:false, searching:true, info:false, scrollX:true, autoWidth:false,
         fixedHeader:{header:true, headerOffset:0},
-        stateSave:true,
+        stateSave: false, // Alterado para false para evitar conflitos de cache com o filtro fixo
         language:{search:"Buscar:", zeroRecords:"Nenhum registro encontrado", infoEmpty:"Nenhum dado disponível"},
         order: [[0, 'desc']],
-        columnDefs: [
-            {
-                targets: colunasDesejadas.indexOf("TIPO DE PRODUTO"),
-                createdCell: function (td, cellData, rowData, row, col) {
-                    const cellValue = cellData.trim().toUpperCase();
-                    let color = '';
-                    if (['ARMARIO', 'COMODA', 'COZINHA', 'BERÇO', 'MULTIUSO', 'PAINEL', 'ROUPEIRO','ARMARIOS', 'MODULOS', 'MODULO'].includes(cellValue)) {
-                        color = '#FFFF00';
-                    } else if (['CELULAR', 'NOTEBOOK', 'IMPRESSORA', 'TABLET','RELÓGIO'].includes(cellValue)) {
-                        color = '#00BFFF';
-                    } else if (cellValue === 'MESA') {
-                        color = '#4CAF50';
-                    }
-                    if (color) {
-                        $(td).css('background-color', color);
-                    }
-                }
+        columnDefs: [{
+            targets: colunasDesejadas.indexOf("TIPO DE PRODUTO"),
+            createdCell: function (td, cellData) {
+                const cellValue = cellData.trim().toUpperCase();
+                let color = '';
+                if (['ARMARIO', 'COMODA', 'COZINHA', 'BERÇO', 'MULTIUSO', 'PAINEL', 'ROUPEIRO','ARMARIOS', 'MODULOS', 'MODULO'].includes(cellValue)) color = '#FFFF00';
+                else if (['CELULAR', 'NOTEBOOK', 'IMPRESSORA', 'TABLET','RELÓGIO'].includes(cellValue)) color = '#00BFFF';
+                else if (cellValue === 'MESA') color = '#4CAF50';
+                if (color) $(td).css('background-color', color);
             }
-        ]
+        }]
     });
 
-    // Função para aplicar os filtros salvos no localStorage
     function aplicarFiltrosSalvos() {
         dataTable.columns().every(function() {
             const column = this;
-            const columnIndex = column.index();
-            const savedFilter = localStorage.getItem(`filtroColuna${columnIndex}`);
+            const savedFilter = localStorage.getItem(`filtroColuna${column.index()}`);
             if (savedFilter) {
                 const savedValues = JSON.parse(savedFilter);
                 if (savedValues.length > 0) {
-                    // Adiciona ^ e $ para forçar a correspondência exata.
                     const searchString = savedValues.map(v => '^' + $.fn.dataTable.util.escapeRegex(v) + '$').join('|');
                     column.search(searchString, true, false);
                 }
@@ -528,28 +425,17 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function (results) 
         dataTable.draw();
     }
 
-    // Atualiza total de cargas
     function atualizarTotalCargas(){
         const total = dataTable.rows({search:'applied'}).data().length;
-        const totalText = "Total de Cargas: " + total;
-        
-        // Atualiza o rodapé da tabela
-        document.getElementById("totalCargas").textContent = totalText;
-        
-        // Atualiza o elemento visual (perto do gráfico)
-        const totalVisualElement = document.getElementById("totalCargasVisual");
-        if (totalVisualElement) {
-            totalVisualElement.textContent = totalText;
-        }
+        document.getElementById("totalCargas").textContent = "Total de Cargas: " + total;
+        if (document.getElementById("totalCargasVisual")) document.getElementById("totalCargasVisual").textContent = "Total de Cargas: " + total;
     }
 
     dataTable.on('draw', () => {
         atualizarTotalCargas();
-        // Garante que o gráfico seja redesenhado com a posição correta da legenda
         renderizarGrafico(dataTable.rows({search:'applied'}).data().toArray()); 
     });
 
-    $(".dataTables_wrapper").css("position","relative");
     $("#planilha_filter").append(`
         <button id="btnShare">📤 Compartilhar</button>
         <div id="shareMenu">
@@ -569,31 +455,31 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function (results) 
         shareMenu.style.display="none";
     });
 
-    // Lógica do Modal de Filtro
     $(document).on('click', '.filter-select', function() {
         const columnIndex = $(this).closest('th').index();
         const columnName = colunasDesejadas[columnIndex];
+        const allUniqueValues = dataTable.column(columnIndex, {filter: 'none'}).data().unique().sort().toArray();
         
-        // **MODIFICAÇÃO CHAVE:** Coleta valores ÚNICOS APENAS das linhas VISÍVEIS 
-        // Como o filtro "DESIGN" é aplicado no load, esta lista SÓ terá valores do DESIGN.
-        // Isso impede que opções de outros fornecedores apareçam.
-        const filteredData = dataTable.rows({search: 'applied'}).data().toArray(); 
-        const uniqueValues = [...new Set(filteredData.map(row => row[columnIndex]))].sort();
+        const oldSearch = dataTable.column(columnIndex).search();
+        dataTable.column(columnIndex).search('').draw();
+        const visibleValues = dataTable.column(columnIndex, {filter: 'applied'}).data().unique().toArray();
+        dataTable.column(columnIndex).search(oldSearch).draw(); 
         
         const savedFilter = localStorage.getItem(`filtroColuna${columnIndex}`);
         const savedValues = savedFilter ? JSON.parse(savedFilter) : [];
         
         let checkboxesHtml = '';
-        uniqueValues.forEach(value => {
+        allUniqueValues.forEach(value => {
             if (value) {
                 const trimmedValue = value.trim(); 
-                // Verifica se este valor está salvo/marcado
                 const isChecked = savedValues.includes(trimmedValue) ? 'checked' : '';
+                const isAvailable = visibleValues.includes(value);
+                const isDisabled = (!isAvailable && !isChecked) ? 'disabled' : '';
+                const optionClass = (!isAvailable && !isChecked) ? 'disabled-option' : '';
                 
-                // Agora, a lista de opções exibida será apenas a relevante para o que está na tela (DESIGN).
                 checkboxesHtml += `
-                    <label>
-                        <input type="checkbox" value="${trimmedValue}" ${isChecked}> ${trimmedValue}
+                    <label class="${optionClass}">
+                        <input type="checkbox" value="${trimmedValue}" ${isChecked} ${isDisabled}> ${trimmedValue}
                     </label>
                 `;
             }
@@ -604,10 +490,13 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function (results) 
         $('#filterModalOverlay').data('column-index', columnIndex).show();
     });
 
-    // Lógica para os botões do modal de filtro
+    $(document).on('click', '.modal-checkbox-list label.disabled-option', function(e) {
+        e.preventDefault();
+        return false;
+    });
+
     $('#btnSelectAll').on('click', function() {
-        // Marca todos os itens visíveis na lista (que agora são só os do DESIGN)
-        $('#modalCheckboxList input[type="checkbox"]').prop('checked', true); 
+        $('#modalCheckboxList input[type="checkbox"]:not(:disabled)').prop('checked', true); 
     });
 
     $('#btnSelectNone').on('click', function() {
@@ -624,9 +513,7 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function (results) 
     });
 
     $('#filterModalOverlay').on('click touchstart', function(e) {
-        if ($(e.target).is('#filterModalOverlay')) {
-            $(this).hide();
-        }
+        if ($(e.target).is('#filterModalOverlay')) $(this).hide();
     });
 
     function atualizarBotaoFiltro() {
@@ -634,78 +521,41 @@ Papa.parse(csvUrl, { download: true, header: true, complete: function (results) 
             const savedFilter = localStorage.getItem(`filtroColuna${index}`);
             const selectedValues = savedFilter ? JSON.parse(savedFilter) : [];
             const button = $(`.filter-select[data-column-name="${col}"]`);
-            if (selectedValues.length > 0) {
-                button.text("APLICADO").addClass("applied");
-            } else {
-                button.text("Filtrar / Limpar Filtro").removeClass("applied");
-            }
+            if (selectedValues.length > 0) button.text("APLICADO").addClass("applied");
+            else button.text("Filtrar / Limpar Filtro").removeClass("applied");
         });
     }
 
     function aplicarFiltroModal() {
         const columnIndex = $('#filterModalOverlay').data('column-index');
-        // Só pega os que estão marcados
-        const selectedValues = $('#modalCheckboxList input:checked').map(function() {
-            return this.value;
-        }).get();
-        
-        // CORRIGIDO: de JSON.DOMAIN para JSON.stringify
+        const selectedValues = $('#modalCheckboxList input:checked').map(function() { return this.value; }).get();
         localStorage.setItem(`filtroColuna${columnIndex}`, JSON.stringify(selectedValues));
-        
-        // Adiciona ^ e $ para forçar a correspondência exata.
         const searchString = selectedValues.map(v => '^' + $.fn.dataTable.util.escapeRegex(v) + '$').join('|');
-        
         const column = dataTable.column(columnIndex);
-        if (searchString) {
-            column.search(searchString, true, false).draw();
-        } else {
-            column.search('').draw();
-        }
+        if (searchString) column.search(searchString, true, false).draw();
+        else column.search('').draw();
         atualizarBotaoFiltro();
-        atualizarTotalCargas();
     }
     
-    // Executa as funções de atualização e aplicação de filtros após a tabela ser inicializada
     aplicarFiltrosSalvos();
     atualizarBotaoFiltro();
 
-    // Novo evento de clique para a coluna "CARGAS"
     $('#planilha tbody').on('click', 'td:nth-child(' + (colunasDesejadas.indexOf("CARGAS") + 1) + ')', function() {
         const fullContent = dataTable.cell(this).data();
-        $('#cargaConteudo').html(fullContent.replace(/,/g, ',<br>')); // Alteração para adicionar quebra de linha
+        $('#cargaConteudo').html(fullContent.replace(/,/g, ',<br>'));
         $('#cargaModal').show();
     });
 
-    // Lógica para fechar o modal
-    $('.close-button').on('click', function() {
-        $('#cargaModal').hide();
-    });
-
-    $(window).on('click', function(event) {
-        if ($(event.target).is('#cargaModal')) {
-            $('#cargaModal').hide();
-        }
-    });
-
+    $('.close-button').on('click', function() { $('#cargaModal').hide(); });
+    $(window).on('click', function(event) { if ($(event.target).is('#cargaModal')) $('#cargaModal').hide(); });
 }});
 
-// Export PDF/Excel
-// Helper para converter Hex para RGB array para jsPDF
 function hexToRgb(hex) {
     let r = 0, g = 0, b = 0;
-    if (hex.length === 4) {
-        r = parseInt(hex[1] + hex[1], 16);
-        g = parseInt(hex[2] + hex[2], 16);
-        b = parseInt(hex[3] + hex[3], 16);
-    } else if (hex.length === 7) {
-        r = parseInt(hex.substring(1, 3), 16);
-        g = parseInt(hex.substring(3, 5), 16);
-        b = parseInt(hex.substring(5, 7), 16);
-    }
+    if (hex.length === 4) { r = parseInt(hex[1] + hex[1], 16); g = parseInt(hex[2] + hex[2], 16); b = parseInt(hex[3] + hex[3], 16); }
+    else if (hex.length === 7) { r = parseInt(hex.substring(1, 3), 16); g = parseInt(hex.substring(3, 5), 16); b = parseInt(hex.substring(5, 7), 16); }
     return [r, g, b];
 }
-
-// Substitua a função exportPDF antiga por esta:
 
 async function exportPDF(table) {
     const { jsPDF } = window.jspdf;
@@ -714,22 +564,19 @@ async function exportPDF(table) {
     const totalCargas = data.length;
     const dataHora = new Date().toLocaleString('pt-BR');
 
-    // Índices das colunas para formatação
     const statusIdx = colunasDesejadas.indexOf("STATUS");
     const centralIdx = colunasDesejadas.indexOf("CENTRAL");
     const prodIdx = colunasDesejadas.indexOf("TIPO DE PRODUTO");
     const visibleRowIndexes = table.rows({ search: 'applied' }).indexes().toArray();
 
-    // 1. CABEÇALHO PROFISSIONAL (Estilo Recebimento)
-    doc.setFillColor(40, 40, 40); // Cinza grafite escuro
+    doc.setFillColor(40, 40, 40); 
     doc.rect(0, 0, doc.internal.pageSize.getWidth(), 35, 'F');
 
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(18);
-    doc.text("MÓVEIS SIMONETTI - CARGAS DO DIA", 15, 15);
+    doc.text("MÓVEIS SIMONETTI - CARGAS DO DIA (DESIGN)", 15, 15);
 
-    // Caixa de Destaque para o Total
-    doc.setFillColor(204, 0, 0); // Vermelho Simonetti
+    doc.setFillColor(204, 0, 0); 
     doc.roundedRect(15, 22, 55, 10, 2, 2, 'F');
     doc.setFontSize(10);
     doc.text(`TOTAL DE CARGAS: ${totalCargas}`, 20, 28.5);
@@ -737,7 +584,6 @@ async function exportPDF(table) {
     doc.setFontSize(9);
     doc.text(`Gerado em: ${dataHora}`, doc.internal.pageSize.getWidth() - 15, 28.5, { align: 'right' });
 
-    // 2. RESUMO POR STATUS (Tabela lateral/pequena antes da principal)
     const statusCounts = {};
     data.forEach(row => {
         const status = row[statusIdx];
@@ -751,7 +597,7 @@ async function exportPDF(table) {
         body: summaryBody,
         theme: 'grid',
         margin: { left: 15 },
-        tableWidth: 80, // Largura reduzida para o resumo
+        tableWidth: 80,
         styles: { fontSize: 7, halign: 'center' },
         headStyles: { fillColor: [80, 80, 80], textColor: [255, 255, 255] },
         didParseCell: function (cellData) {
@@ -767,7 +613,6 @@ async function exportPDF(table) {
         }
     });
 
-    // 3. TABELA PRINCIPAL DE DADOS
     doc.autoTable({
         startY: doc.lastAutoTable.finalY + 10,
         head: [colunasDesejadas],
@@ -779,7 +624,6 @@ async function exportPDF(table) {
             if (cellData.section === 'body') {
                 const originalRowIndex = visibleRowIndexes[cellData.row.index];
 
-                // Pintar Status
                 if (cellData.column.index === statusIdx) {
                     const val = cellData.cell.text[0];
                     const color = coresStatus[val];
@@ -790,7 +634,6 @@ async function exportPDF(table) {
                     }
                 }
 
-                // Pintar Tipo de Produto (Fundo Amarelo/Azul etc)
                 if (cellData.column.index === prodIdx) {
                     const cellValue = cellData.cell.text[0].toUpperCase();
                     let color = '';
@@ -804,7 +647,6 @@ async function exportPDF(table) {
                     }
                 }
 
-                // Alerta Vermelho na Central (conforme lógica do seu HTML)
                 if (cellData.column.index === centralIdx && coresCentral[originalRowIndex] === 'red') {
                     cellData.cell.styles.textColor = [255, 0, 0];
                     cellData.cell.styles.fontStyle = 'bold';
@@ -813,7 +655,7 @@ async function exportPDF(table) {
         }
     });
 
-    doc.save(`Cargas_do_Dia_Simonetti_${totalCargas}.pdf`);
+    doc.save(`Cargas_do_Dia_DESIGN_${totalCargas}.pdf`);
 }
 
 function exportExcel(table){
@@ -823,8 +665,8 @@ function exportExcel(table){
     data.forEach(row=>ws_data.push([...row]));
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.aoa_to_sheet(ws_data);
-    XLSX.utils.book_append_sheet(wb,ws,"Cargas.xlsx");
-    XLSX.writeFile(wb, "Cargas.xlsx");
+    XLSX.utils.book_append_sheet(wb,ws,"Cargas_DESIGN");
+    XLSX.writeFile(wb, "Cargas_DESIGN.xlsx");
 }
 </script>
 </body>
